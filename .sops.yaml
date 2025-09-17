@@ -1,0 +1,14 @@
+keys:
+  - &cirius-wsl age1fhqqzfkn6wp2dklplgmd6gsfg67vhwqlcx8vxug50lsrs0fcjv8sx8xsg6
+  - &cirius-wsl_cirius age1x9kwej7qejzkr5n3gz6wxecq9a5kq2rcf9lpg4t36638mtwlgylsahwhgs
+
+creation_rules:
+  - path_regex: secrets/cirius-wsl/cirius/[^/]+\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+         - *cirius-wsl_cirius
+  - path_regex: secrets/cirius-wsl/[^/]+\.(yaml|json|env|ini)$
+    key_groups:
+      - age:
+         - *cirius-wsl
+         - *cirius-wsl_cirius

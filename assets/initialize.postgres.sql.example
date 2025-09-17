@@ -1,0 +1,18 @@
+-- replace .db_name, .schema_name, .admin_password, .writer_password, .reader_password with actual values before running
+
+drop schema if exists public;
+create schema if not exists .schema_name;
+alter database .db_name set search_path = .schema_name;
+
+create role admin with login password '.admin_password';
+grant all privileges on database .db_name to admin;
+
+create role writer with login password '.writer_password';
+grant connect on database .db_name to writer;
+grant usage on schema .schema_name to writer;
+alter default privileges for role writer in schema .schema_name grant insert, select, update, delete, truncate on tables to writer;
+
+create role reader with login password '.reader_password';
+grant connect on database .db_name to reader;
+grant usage on schema .schema_name to reader;
+alter default privileges for role reader in schema .schema_name grant select on tables to reader;

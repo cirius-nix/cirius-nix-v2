@@ -1,0 +1,34 @@
+version: 3
+includes:
+  secrets:
+    taskfile: ./secrets/Taskfile.yaml
+    optional: true
+tasks:
+  default:
+    desc: "List all of tasks"
+    cmds:
+      - task -l
+  build:
+    desc: "Build new version"
+    cmds:
+      - sudo nixos-rebuild build
+  switch:
+    desc: "Build and switch to new nix version"
+    cmds:
+      - sudo nixos-rebuild switch
+  gc:all:
+    desc: "Delete all (non-current) generations"
+    cmds:
+      - nix-env --delete-generations old
+      - nix-store --gc
+  gc:2w:
+    desc: "Delete generations older than 2 weeks"
+    cmds:
+      - nix-env --delete-generations 14d
+      - nix-store --gc
+  checkPerm:
+    desc: "Check permission of a file or folder"
+    vars:
+      DEST: "{{ index .CLI_ARGS_LIST 0 }}"
+    cmds:
+      - stat -c "%a" {{ .DEST }}
