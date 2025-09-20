@@ -4,11 +4,11 @@
   lib,
   pkgs,
   ...
-}: 
-let 
+}:
+let
   inherit (lib) mkIf;
   inherit (lib.${namespace}.nixvim) mkKeymap;
-  inherit (config.${namespace}.dev.editor) nixvim;
+  inherit (config.${namespace}.development.editors) nixvim;
 in
 {
   config = mkIf nixvim.enable {
@@ -46,16 +46,21 @@ in
           if vim.bo.filetype == "neo-tree" then
             vim.api.nvim_win_close(win, true)
           else
-            ${if config.programs.nixvim.plugins.dap.enable then ''
-              if _G.FUNCS.check_dapui_visible() then
-                vim.cmd("Neotree focus position=float")
-                return
-              end
-            '' else ''''}
+            ${
+              if config.programs.nixvim.plugins.dap.enable then
+                ''
+                  if _G.FUNCS.check_dapui_visible() then
+                    vim.cmd("Neotree focus position=float")
+                    return
+                  end
+                ''
+              else
+                ''''
+            }
             vim.cmd("Neotree focus position=" .. pos)
           end
         end
-        '';
+      '';
       plugins = {
         web-devicons.enable = true;
         neo-tree = {
@@ -75,7 +80,9 @@ in
             "o" = "toggle_node";
             "e" = {
               command = "toggle_preview";
-              config = { use_float = true; };
+              config = {
+                use_float = true;
+              };
             };
           };
         };

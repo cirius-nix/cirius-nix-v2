@@ -6,10 +6,10 @@
 }:
 let
   inherit (lib) mkIf mkEnableOption;
-  inherit (config.${namespace}.dev.editor) nixvim;
+  inherit (config.${namespace}.development.editors) nixvim;
 in
 {
-  options.${namespace}.dev.editor.nixvim.debug = {
+  options.${namespace}.development.editors.nixvim.debug = {
     enable = mkEnableOption "Enable Nixvim";
   };
   config = mkIf nixvim.debug.enable {

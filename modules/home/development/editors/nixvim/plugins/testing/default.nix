@@ -7,7 +7,7 @@
 let
   inherit (lib) mkIf;
   inherit (lib.${namespace}.nixvim) mkKeymap;
-  inherit (config.${namespace}.dev.editor) nixvim;
+  inherit (config.${namespace}.development.editors) nixvim;
 in
 {
   config = {
