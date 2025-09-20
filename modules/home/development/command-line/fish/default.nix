@@ -25,10 +25,10 @@ let
     submodule
     ;
   inherit (config.${namespace}.dev) lang;
-  inherit (config.${namespace}.dev.cli) fish;
+  inherit (config.${namespace}.development.command-line) fish;
 in
 {
-  options.${namespace}.dev.cli.fish = {
+  options.${namespace}.development.command-line.fish = {
     enable = mkEnableOption "Enable fish shell";
     aliases = mkOption {
       type = attrsOf str;

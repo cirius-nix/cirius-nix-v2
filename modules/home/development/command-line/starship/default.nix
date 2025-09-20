@@ -6,10 +6,10 @@
 }:
 let
   inherit (lib) mkIf mkEnableOption;
-  inherit (config.${namespace}.dev.cli) fish starship;
+  inherit (config.${namespace}.development.command-line) fish starship;
 in
 {
-  options.${namespace}.dev.cli.starship = {
+  options.${namespace}.development.command-line.starship = {
     enable = mkEnableOption "Enable starship";
   };
   config = mkIf starship.enable {

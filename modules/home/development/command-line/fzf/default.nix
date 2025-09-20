@@ -10,10 +10,10 @@ let
     mkIf
     mkEnableOption
     ;
-  inherit (config.${namespace}.dev.cli) fzf;
+  inherit (config.${namespace}.development.command-line) fzf;
 in
 {
-  options.${namespace}.dev.cli.fzf = {
+  options.${namespace}.development.command-line.fzf = {
     enable = mkEnableOption "Enable fzf (fuzzy finder)";
   };
   config = mkIf fzf.enable {

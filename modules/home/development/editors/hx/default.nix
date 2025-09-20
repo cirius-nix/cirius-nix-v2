@@ -12,10 +12,10 @@ let
     mkOption
     types
     ;
-  inherit (config.${namespace}.dev.editor) hx;
+  inherit (config.${namespace}.development.editors) hx;
 in
 {
-  options.${namespace}.dev.editor.hx = {
+  options.${namespace}.development.editors.hx = {
     enable = mkEnableOption "Enable Helix Editor";
     package = mkOption {
       type = types.package;

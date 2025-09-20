@@ -7,11 +7,11 @@
 }:
 let
   inherit (lib) mkIf mkEnableOption;
-  inherit (config.${namespace}.dev.lang) go;
-  inherit (config.${namespace}.dev.cli) fish;
+  inherit (config.${namespace}.development.lang) go;
+  inherit (config.${namespace}.development.command-line) fish;
 in
 {
-  options.${namespace}.dev.lang.go = {
+  options.${namespace}.development.lang.go = {
     enable = mkEnableOption "Enable Go Language Support";
   };
   config = mkIf go.enable {
@@ -26,7 +26,7 @@ in
     programs.go = {
       enable = true;
     };
-    ${namespace}.dev.cli.fish = mkIf fish.enable {
+    ${namespace}.development.command-line.fish = mkIf fish.enable {
       interactiveEnvs = {
         GOBIN = "$HOME/go/bin";
       };

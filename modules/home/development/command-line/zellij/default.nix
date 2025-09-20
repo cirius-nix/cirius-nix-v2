@@ -7,7 +7,7 @@
 }:
 let
   inherit (lib) mkIf mkEnableOption;
-  inherit (config.${namespace}.dev.cli) zellij;
+  inherit (config.${namespace}.development.command-line) zellij;
 
   mkBindAct = shortcuts: actionName: action: {
     "bind \"${shortcuts}\"" = {
@@ -32,7 +32,7 @@ let
     };
 in
 {
-  options.${namespace}.dev.cli.zellij = {
+  options.${namespace}.development.command-line.zellij = {
     enable = mkEnableOption "Enable zellij terminal workspace";
     leader = lib.mkOption {
       type = lib.types.str;

@@ -7,10 +7,10 @@
 }:
 let
   inherit (lib) mkIf mkEnableOption;
-  inherit (config.${namespace}.dev.cli) stat;
+  inherit (config.${namespace}.development.command-line) stat;
 in
 {
-  options.${namespace}.dev.cli.stat = {
+  options.${namespace}.development.command-line.stat = {
     enable = mkEnableOption "Enable stat CLI tool";
   };
   config = mkIf stat.enable {

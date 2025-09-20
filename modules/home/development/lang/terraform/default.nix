@@ -7,10 +7,10 @@
 }:
 let
   inherit (lib) mkIf mkEnableOption;
-  tf = config.${namespace}.dev.lang.terraform;
+  tf = config.${namespace}.development.lang.terraform;
 in
 {
-  options.${namespace}.dev.lang.terraform = {
+  options.${namespace}.development.lang.terraform = {
     enable = mkEnableOption "Enable Terraform Language Support";
   };
   config = mkIf tf.enable {

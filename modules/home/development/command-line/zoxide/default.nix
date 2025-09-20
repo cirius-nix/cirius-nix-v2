@@ -6,16 +6,16 @@
   ...
 }:
 let
-  inherit (config.${namespace}.dev.cli) fish zoxide;
+  inherit (config.${namespace}.development.command-line) fish zoxide;
   inherit (lib) getExe mkIf mkEnableOption;
 in
 {
-  options.${namespace}.dev.cli.zoxide = {
+  options.${namespace}.development.command-line.zoxide = {
     enable = mkEnableOption "Enable zoxide, a smarter cd command";
   };
   config = mkIf zoxide.enable {
     home.packages = [ pkgs.zoxide ];
-    ${namespace}.dev.cli = mkIf fish.enable {
+    ${namespace}.development.command-line = mkIf fish.enable {
       fish = {
         interactiveCMDs = {
           zoxide = {

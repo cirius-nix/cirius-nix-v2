@@ -7,10 +7,10 @@
 }:
 let
   inherit (lib) mkIf mkEnableOption;
-  inherit (config.${namespace}.dev.lang) shell;
+  inherit (config.${namespace}.development.lang) shell;
 in
 {
-  options.${namespace}.dev.lang.shell = {
+  options.${namespace}.development.lang.shell = {
     enable = mkEnableOption "Enable shell Language Support";
   };
   config = mkIf shell.enable {

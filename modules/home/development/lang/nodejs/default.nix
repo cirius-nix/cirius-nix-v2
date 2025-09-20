@@ -6,9 +6,9 @@
   ...
 }: let
   inherit (lib) mkIf mkEnableOption;
-  inherit (config.${namespace}.dev.lang) nodejs;
+  inherit (config.${namespace}.development.lang) nodejs;
 in {
-  options.${namespace}.dev.lang.nodejs = {
+  options.${namespace}.development.lang.nodejs = {
     enable = mkEnableOption "Enable NodeJS";
   };
   config = mkIf nodejs.enable {

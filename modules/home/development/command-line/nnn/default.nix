@@ -5,7 +5,7 @@
   ...
 }:
 let
-  inherit (config.${namespace}.dev.cli) nnn;
+  inherit (config.${namespace}.development.command-line) nnn;
   inherit (lib)
     mkIf
     mkEnableOption
@@ -14,7 +14,7 @@ let
     ;
 in
 {
-  options.${namespace}.dev.cli.nnn = {
+  options.${namespace}.development.command-line.nnn = {
     enable = mkEnableOption "Enable nnn file manager";
     bookmarks = mkOption {
       type = types.attrsOf types.str;

@@ -7,10 +7,10 @@
 }:
 let
   inherit (lib) mkIf mkEnableOption;
-  inherit (config.${namespace}.dev.cli) taskfile;
+  inherit (config.${namespace}.development.command-line) taskfile;
 in
 {
-  options.${namespace}.dev.cli.taskfile = {
+  options.${namespace}.development.command-line.taskfile = {
     enable = mkEnableOption "Enable Taskfile. (Alternative to Make)";
   };
   config = mkIf taskfile.enable {

@@ -6,10 +6,10 @@
 }:
 let
   inherit (lib) mkIf mkEnableOption;
-  inherit (config.${namespace}.dev.cli) direnv;
+  inherit (config.${namespace}.development.command-line) direnv;
 in
 {
-  options.${namespace}.dev.cli.direnv = {
+  options.${namespace}.development.command-line.direnv = {
     enable = mkEnableOption "Enable Direnv";
   };
   config = mkIf direnv.enable {

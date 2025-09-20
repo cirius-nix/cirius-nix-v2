@@ -7,10 +7,10 @@
 }:
 let
   inherit (lib) mkIf mkEnableOption;
-  inherit (config.${namespace}.dev.cli) devenv;
+  inherit (config.${namespace}.development.command-line) devenv;
 in
 {
-  options.${namespace}.dev.cli.devenv = {
+  options.${namespace}.development.command-line.devenv = {
     enable = mkEnableOption "Enable development environment setup";
   };
   config = mkIf devenv.enable {
