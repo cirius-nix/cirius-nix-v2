@@ -6,14 +6,14 @@
   ...
 }:
 let
-  inherit (config.${namespace}.dev) infra;
+  inherit (config.${namespace}.development) infra;
   inherit (lib)
     mkIf
     mkEnableOption
     ;
 in
 {
-  options.${namespace}.dev.infra = {
+  options.${namespace}.development.infra = {
     enable = mkEnableOption "Enable related tools";
   };
   config = mkIf infra.enable {

@@ -7,14 +7,14 @@
 }:
 let
   inherit (lib) mkIf mkEnableOption;
-  inherit (config.${namespace}.dev.lang) nix;
+  inherit (config.${namespace}.development.lang) nix;
 in
 {
-  options.${namespace}.dev.lang.nix = {
+  options.${namespace}.development.lang.nix = {
     enable = mkEnableOption "Enable Nix Language Support";
   };
   config = mkIf nix.enable {
-    # `nix-shell` replacement for project development.
+    # `nix-shell` replacement for project developmentelopment.
     # currently, MacOS support is not good enough.
     # https://github.com/nix-community/lorri
     services.lorri = mkIf pkgs.stdenv.isLinux {

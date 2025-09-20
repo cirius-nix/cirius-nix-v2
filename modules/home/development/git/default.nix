@@ -15,11 +15,11 @@ let
     getExe
     ;
   inherit (lib.${namespace}) flatDist;
-  inherit (config.${namespace}.dev) git;
+  inherit (config.${namespace}.development) git;
   inherit (git.plugins) opencommit;
 in
 {
-  options.${namespace}.dev.git = {
+  options.${namespace}.development.git = {
     enable = mkEnableOption "Enable Git";
     includeConfigs = mkOption {
       type = types.listOf types.attrs;

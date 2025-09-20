@@ -6,17 +6,18 @@
 }:
 let
   inherit (lib) mkIf mkEnableOption;
-  inherit (config.${namespace}.dev.editor) nixvim;
-  inherit (config.${namespace}.dev.lang) nodejs;
+  inherit (config.${namespace}.development.editors) nixvim;
+  inherit (config.${namespace}.development.lang) nodejs;
 in
 {
-  options.${namespace}.dev.editor.nixvim = {
+  options.${namespace}.development.editors.nixvim = {
     enable = mkEnableOption "Enable nixvim editor";
     wsl = mkEnableOption "Enable nixvim editor for WSL";
   };
   config = mkIf nixvim.enable {
+    # stylix.targets.nixvim.enable = true;
     ${namespace} = {
-      dev.cli.fish = {
+      development.command-line.fish = {
         interactiveEnvs = {
           "EDITOR" = "nvim";
         };

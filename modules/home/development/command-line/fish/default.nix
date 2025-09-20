@@ -123,10 +123,6 @@ in
         '';
       plugins = [
         {
-          name = "fish-you-should-use";
-          inherit (pkgs.fishPlugins.fish-you-should-use) src;
-        }
-        {
           name = "autopair";
           inherit (pkgs.fishPlugins.autopair) src;
         }

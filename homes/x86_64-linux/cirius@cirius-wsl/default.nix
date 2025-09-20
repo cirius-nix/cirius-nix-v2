@@ -62,14 +62,13 @@ in
         wallpaper = ./wallpaper.jpg;
       };
       nix.enable = true;
-      dev = {
-
+      development = {
         sonarqube = {
           enable = true;
           postgresDB = { };
           settings = { };
         };
-        cli = {
+        command-line = {
           stat.enable = true;
           fzf.enable = true;
           zoxide.enable = true;
@@ -141,7 +140,7 @@ in
             }
           ];
         };
-        editor = {
+        editors = {
           nixvim = {
             enable = true;
             enableCopilot = true;

@@ -24,7 +24,7 @@ let
     ;
   inherit (lib.${namespace}) mkStrOption;
 
-  inherit (config.${namespace}.dev) sonarqube;
+  inherit (config.${namespace}.development) sonarqube;
   pgPort = ((osConfig.${namespace}.db).postgres).port;
 
   user = config.snowfallorg.user;
@@ -55,7 +55,7 @@ let
       sonarqube.package;
 in
 {
-  options.${namespace}.dev.sonarqube = {
+  options.${namespace}.development.sonarqube = {
     enable = mkEnableOption "Enable Sonarqube.";
     package = mkOption {
       type = types.nullOr types.package;
