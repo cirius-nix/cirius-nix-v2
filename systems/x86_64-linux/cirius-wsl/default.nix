@@ -44,6 +44,10 @@ in
         extraGroups = [ "wheel" ];
       };
     };
+    home-manager = {
+      useGlobalPkgs = true;
+      users.cirius.home.stateVersion = "25.05";
+    };
     nix = {
       settings.trusted-users = [
         "root"

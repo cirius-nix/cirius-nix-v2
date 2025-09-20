@@ -2,6 +2,7 @@
   config,
   namespace,
   lib,
+  pkgs,
   ...
 }:
 let
@@ -18,10 +19,21 @@ in
     };
   };
   config = mkIf stylix.enable {
-    stylix.enable = true;
-    # harmful for wsl
-    stylix.autoEnable = false;
-    stylix.image = stylix.wallpaper;
-    stylix.polarity = "dark";
+    stylix = {
+      enable = true;
+      autoEnable = false; # WSL cannot support this.
+      image = stylix.wallpaper;
+      polarity = "dark";
+      fonts = {
+        monospace = {
+          package = pkgs.nerd-fonts.fira-code;
+          name = "FiraCode Nerd Font";
+        };
+        sizes = {
+          terminal = 11;
+        };
+      };
+      opacity.terminal = 0.95;
+    };
   };
 }

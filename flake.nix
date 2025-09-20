@@ -2,11 +2,6 @@
   description = "Cirius Nix Version 2";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    # Lix is an implementation of the Nix functional package management language.
-    lix-module = {
-      url = "https://git.lix.systems/lix-project/nixos-module/archive/2.93.3-1.tar.gz";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     # Snowfall lib for project structure.
     snowfall-flake = {
       url = "github:snowfallorg/flake";
@@ -19,6 +14,15 @@
     # Home management.
     home-manager = {
       url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    # Desktop environment.
+    hyprland = {
+      url = "github:hyprwm/Hyprland";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    walker = {
+      url = "github:abenz1267/walker";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # WSL support.
@@ -45,6 +49,12 @@
       url = "github:nix-community/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # browser
+    zen-browser = {
+      url = "github:0xc000022070/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    # Hyprland
   };
   outputs =
     inputs:
@@ -83,19 +93,20 @@
       systems.modules = {
         # add modules to all nixos system.
         nixos = with inputs; [
-          lix-module.nixosModules.lixFromNixpkgs # https://git.lix.systems/lix-project/lix/issues/977
           # lix-module.nixosModules.default
           sops-nix.nixosModules.sops
           # nixos wsl support
           nixos-wsl.nixosModules.default
           # stylix theming
           stylix.nixosModules.stylix
+          # hyprland
+          hyprland.nixosModules.default
+          walker.nixosModules.default
         ];
         # add modules to all darwin system.
         darwin = with inputs; [
           # lix support
           sops-nix.darwinModules.sops
-          lix-module.darwinModules.lixFromNixpkgs
           # stylix theming
           stylix.darwinModules.stylix
         ];
@@ -110,6 +121,11 @@
           sops-nix.homeManagerModules.sops
           # stylix theming
           stylix.homeModules.stylix
+          # zen browser
+          inputs.zen-browser.homeModules.twilight-official
+          # hyprland
+          hyprland.homeManagerModules.default
+          walker.homeManagerModules.default
         ];
       };
       packages = { };

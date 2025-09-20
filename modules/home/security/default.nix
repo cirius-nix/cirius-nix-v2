@@ -6,10 +6,7 @@
   ...
 }:
 let
-  inherit (lib)
-    mkIf
-    mkEnableOption
-    ;
+  inherit (lib) mkIf mkEnableOption;
   inherit (config.${namespace}) security;
 in
 {
