@@ -10,12 +10,12 @@ let
     mkIf
     getExe
     ;
-  inherit (config.${namespace}.dev.cli) fish;
+  inherit (config.${namespace}.development.command-line) fish;
 in
 {
   config = {
     ${namespace} = {
-      dev.cli = mkIf fish.enable {
+      development.command-line = mkIf fish.enable {
         fish = {
           interactiveCMDs = {
             fastfetch = {

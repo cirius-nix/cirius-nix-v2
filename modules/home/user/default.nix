@@ -3,8 +3,6 @@
   pkgs,
   ...
 }:
-let
-in
 {
   options.${namespace}.user = {
   };
