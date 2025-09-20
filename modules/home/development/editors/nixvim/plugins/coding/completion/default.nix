@@ -13,10 +13,10 @@ let
     optional
     ;
   inherit (types) listOf str;
-  inherit (config.${namespace}.dev.editor) nixvim;
+  inherit (config.${namespace}.development.editors) nixvim;
 in
 {
-  options.${namespace}.dev.editor.nixvim = {
+  options.${namespace}.development.editors.nixvim = {
     enableCopilot = mkEnableOption "Enable github copilot support";
     autocompleteSources = mkOption {
       type = listOf str;

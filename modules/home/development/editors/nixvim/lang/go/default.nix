@@ -11,8 +11,8 @@ let
     getExe
     getExe'
     ;
-  inherit (config.${namespace}.dev) lang;
-  inherit (config.${namespace}.dev.editor) nixvim;
+  inherit (config.${namespace}.development) lang;
+  inherit (config.${namespace}.development.editors) nixvim;
 in
 {
   config = mkIf (lang.go.enable && nixvim.enable) {

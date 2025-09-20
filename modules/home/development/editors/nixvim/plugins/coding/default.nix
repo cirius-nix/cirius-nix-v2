@@ -7,7 +7,7 @@
 }:
 let
   inherit (lib) mkIf;
-  inherit (config.${namespace}.dev.editor) nixvim;
+  inherit (config.${namespace}.development.editors) nixvim;
 in
 {
   config = mkIf nixvim.enable {

@@ -7,11 +7,11 @@
 }:
 let
   inherit (lib) mkIf getExe;
-  inherit (config.${namespace}.dev) lang;
-  inherit (config.${namespace}.dev.editor) nixvim;
+  inherit (config.${namespace}.development) lang;
+  inherit (config.${namespace}.development.editors) nixvim;
 in
 {
-  options.${namespace}.dev.editor.nixvim.lang.shell = {
+  options.${namespace}.development.editors.nixvim.lang.shell = {
   };
   config = mkIf (nixvim.enable && lang.shell.enable) {
     home.packages = [

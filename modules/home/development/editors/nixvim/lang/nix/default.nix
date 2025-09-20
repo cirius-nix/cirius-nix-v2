@@ -9,7 +9,7 @@
 let
   inherit (lib) mkIf getExe;
   inherit (config.snowfallorg) user;
-  inherit (config.${namespace}.dev) lang;
+  inherit (config.${namespace}.development) lang;
 in
 {
   config = mkIf lang.nix.enable {

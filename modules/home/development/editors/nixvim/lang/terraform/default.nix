@@ -7,8 +7,8 @@
 }:
 let
   inherit (lib) getExe mkIf;
-  inherit (config.${namespace}.dev.lang) terraform;
-  inherit (config.${namespace}.dev.editor) nixvim;
+  inherit (config.${namespace}.development.lang) terraform;
+  inherit (config.${namespace}.development.editors) nixvim;
 in
 {
   config = {
