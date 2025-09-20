@@ -24,7 +24,7 @@ let
     str
     submodule
     ;
-  inherit (config.${namespace}.dev) lang;
+  inherit (config.${namespace}.development) lang;
   inherit (config.${namespace}.development.command-line) fish;
 in
 {
