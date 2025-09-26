@@ -70,7 +70,15 @@ in
             container = 1;
           };
         } (builtins.map mapContainerToSpace zen-browser.containers);
+        settings = {
+          "zen.widget.linux.transparency" = true;
+          "zen.theme.gradient.show-custom-colors" = true;
+          "zen.view.grey-out-inactive-windows" = false;
+        };
       };
+      #  zen.widget.linux.transparency = true
+      # zen.theme.gradient.show-custom-colors = true
+      # zen.view.grey-out-inactive-windows = false
       # https://mozilla.github.io/policy-templates/
       policies = {
         AutofillAddressEnabled = true;
@@ -80,6 +88,7 @@ in
         DisableFirefoxStudies = true;
         DisablePocket = true;
         DisableTelemetry = true;
+        BlockAboutConfig = false;
         DontCheckDefaultBrowser = true;
         NoDefaultBookmarks = true;
         OfferToSaveLogins = false;

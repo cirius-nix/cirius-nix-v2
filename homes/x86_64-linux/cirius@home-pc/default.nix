@@ -1,4 +1,5 @@
 {
+  pkgs,
   ...
 }:
 let
@@ -7,36 +8,50 @@ in
 {
   config = {
     "${namespace}" = {
+      picture = {
+        krita.enable = true;
+        gimp.enable = true;
+      };
+      explorer.nautilus.enable = true;
       term.alacritty = {
         enable = true;
       };
       stylix = {
         enable = true;
-        wallpaper = ./wallpaper.jpg;
+        wallpaper = ../../../assets/wallpaper-3.jpg;
       };
       hyprland = {
+        packages = {
+          icon = pkgs.beauty-line-icon-theme;
+        };
+        plugins = {
+          waybar.enable = true;
+          mako.enable = true;
+          walker.enable = true;
+          grimshot.enable = true;
+          grimshot.editor = "krita";
+        };
         aliases = {
           mod = "SUPER";
-          browser = "MOZ_LEGACY_PROFILES=1 zen";
-          privateBrowser = "MOZ_LEGACY_PROFILES=1 zen --private-window";
-          terminal = "alacritty";
-          fileManager = "alacritty -e nnn";
-          menu = "walker";
-          ai = ''alacritty -e tgpt --interactive-shell'';
+          launchBrowser = "zen";
+          launchPrivateBrowser = "zen --private-window";
+          launchTerminal = "alacritty";
+          launchFileManager = "nautilus";
+          launchMenu = "walker";
+          launchAI = ''zen --new-window https://copilot.microsoft.com'';
         };
       };
       security = {
         enable = true;
       };
       ai = {
+        copilot = {
+          enable = true;
+        };
         gemini = {
           enable = true;
         };
       };
-      #   stylix = {
-      #     enable = true;
-      #     wallpaper = ./wallpaper.jpg;
-      #   };
       nix.enable = true;
       browser.zen-browser = {
         enable = true;
@@ -53,6 +68,12 @@ in
         ];
       };
       development = {
+        api-client = {
+          apidog.enable = true;
+        };
+        git = {
+          enable = true;
+        };
         command-line = {
           stat.enable = true;
           fzf.enable = true;
@@ -78,9 +99,11 @@ in
         };
         infra.enable = true;
         editors = {
+          datagrip.enable = true;
           nixvim = {
             enable = true;
-            enableCopilot = true;
+            enableCopilotCompletion = true;
+            ai = true;
           };
         };
         lang = {

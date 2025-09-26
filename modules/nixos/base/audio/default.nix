@@ -1,4 +1,9 @@
+{ pkgs, ... }:
 {
+  # stylix.targets.cavalier.enable = true;
+  environment.systemPackages = [
+    pkgs.wiremix
+  ];
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;

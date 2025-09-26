@@ -22,6 +22,7 @@ in
       gofumpt
       gosimports
       goimports-reviser
+      air
     ];
     programs.go = {
       enable = true;

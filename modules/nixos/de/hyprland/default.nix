@@ -19,10 +19,10 @@ in
       pkgs.hyprland-qt-support
       pkgs.hyprpolkitagent
     ];
-    environment.variables = {
-      # TODO: use hyprqt6engine instead
+    environment.sessionVariables = {
       "QT_QPA_PLATFORMTHEME" = "qt6ct";
       "MOZ_LEGACY_PROFILES" = "1";
+      "NIXOS_OZONE_WL" = "1";
     };
     programs.hyprland = {
       enable = true;

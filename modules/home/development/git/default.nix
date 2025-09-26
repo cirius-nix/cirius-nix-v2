@@ -16,6 +16,7 @@ let
     ;
   inherit (lib.${namespace}) flatDist;
   inherit (config.${namespace}.development) git;
+  inherit (config.${namespace}.development.command-line) fish;
   inherit (git.plugins) opencommit;
 in
 {
@@ -58,6 +59,11 @@ in
     home.packages = flatDist [
       (lib.optional opencommit.enable opencommit.package)
     ];
+    programs.fish = {
+      interactiveShellInit = ''
+        source ${./extra/copilot-fn.fish}
+      '';
+    };
     sops.templates = mkIf git.sopsIntegration.enable {
       ".opencommit_config" = {
         mode = "0660";
@@ -127,7 +133,10 @@ in
     };
     programs.gh = {
       enable = true;
-      extensions = [ ];
+      extensions = [
+        pkgs.gh-copilot
+        pkgs.gh-eco
+      ];
       gitCredentialHelper = {
         enable = true;
         hosts = [ "https://github.com" ];

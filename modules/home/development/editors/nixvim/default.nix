@@ -13,6 +13,7 @@ in
   options.${namespace}.development.editors.nixvim = {
     enable = mkEnableOption "Enable nixvim editor";
     wsl = mkEnableOption "Enable nixvim editor for WSL";
+    ai = mkEnableOption "Enable AI plugin inside nixvim";
   };
   config = mkIf nixvim.enable {
     # stylix.targets.nixvim.enable = true;

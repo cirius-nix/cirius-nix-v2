@@ -54,7 +54,8 @@
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Hyprland
+    nix-index-database.url = "github:nix-community/nix-index-database";
+    nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
   };
   outputs =
     inputs:
@@ -93,6 +94,7 @@
       systems.modules = {
         # add modules to all nixos system.
         nixos = with inputs; [
+          nix-index-database.nixosModules.nix-index
           # lix-module.nixosModules.default
           sops-nix.nixosModules.sops
           # nixos wsl support
@@ -102,6 +104,7 @@
           # hyprland
           hyprland.nixosModules.default
           walker.nixosModules.default
+
         ];
         # add modules to all darwin system.
         darwin = with inputs; [

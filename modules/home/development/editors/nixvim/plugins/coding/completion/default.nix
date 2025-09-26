@@ -17,7 +17,7 @@ let
 in
 {
   options.${namespace}.development.editors.nixvim = {
-    enableCopilot = mkEnableOption "Enable github copilot support";
+    enableCopilotCompletion = mkEnableOption "Enable github copilot support";
     autocompleteSources = mkOption {
       type = listOf str;
       default = [ ];
@@ -52,7 +52,7 @@ in
           };
         };
         copilot-lua = {
-          enable = nixvim.enableCopilot;
+          enable = nixvim.enableCopilotCompletion;
           settings = {
             suggestion = {
               enabled = false;
@@ -62,7 +62,7 @@ in
             };
           };
         };
-        blink-cmp-copilot.enable = nixvim.enableCopilot;
+        blink-cmp-copilot.enable = nixvim.enableCopilotCompletion;
         blink-cmp = {
           enable = true;
           settings = {
@@ -92,7 +92,7 @@ in
                 ]
                 # lib:optional :: Bool -> a -> [a]
                 # lib:optionals:: Bool -> [a] -> [a]
-                (optional nixvim.enableCopilot "copilot")
+                (optional nixvim.enableCopilotCompletion "copilot")
                 nixvim.autocompleteSources
               ];
               providers = {

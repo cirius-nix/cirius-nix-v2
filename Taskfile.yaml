@@ -15,7 +15,7 @@ tasks:
   switch:
     desc: "Build and switch to new nix version"
     cmds:
-      - sudo nixos-rebuild switch
+      - sudo nixos-rebuild switch {{ .CLI_ARGS }}
   gc:all:
     desc: "Delete all (non-current) generations"
     cmds:
@@ -50,3 +50,8 @@ tasks:
     desc: "View the pre-boot logs"
     cmds:
       - sudo journalctl -b -1
+  check:ldlib:
+    desc: "Check ld lib"
+    cmds:
+      - nix-locate {{ .CLI_ARGS }}
+

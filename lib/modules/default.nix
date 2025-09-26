@@ -24,4 +24,10 @@ in
       inherit default description;
       type = types.str;
     };
+  mkListOption =
+    type: default: description:
+    mkOption {
+      inherit default description;
+      type = types.listOf type;
+    };
 }

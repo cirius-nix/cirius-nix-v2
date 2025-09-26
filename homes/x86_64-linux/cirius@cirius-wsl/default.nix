@@ -143,7 +143,7 @@ in
         editors = {
           nixvim = {
             enable = true;
-            enableCopilot = true;
+            enableCopilotCompletion = true;
           };
         };
         lang = {
