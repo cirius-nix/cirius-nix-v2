@@ -4,8 +4,7 @@
   namespace,
   pkgs,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf mkEnableOption;
   inherit (config.${namespace}.development.api-client) apidog;
 
@@ -15,7 +14,7 @@ let
     name = "${pname}-${version}";
     src = pkgs.fetchurl {
       url = "https://file-assets.apidog.com/download/Apidog-linux-manual-latest.tar.gz";
-      sha256 = "sha256-5KTCHsCJKlNM/4Kl+3VdLs7FXiO3qw6z4ggGfsWqwT8=";
+      sha256 = "sha256-tnhJoKqpa/hb70RjjwO1PdoCG380P7AwKHrj+Z4IzYk=";
     };
     nativeBuildInputs = [
       pkgs.makeWrapper
@@ -37,22 +36,21 @@ let
       description = "Apidog: All-in-one API design, documentation, debugging, and testing tool";
       homepage = "https://apidog.com/";
       license = licenses.unfree;
-      platforms = [ "x86_64-linux" ];
+      platforms = ["x86_64-linux"];
     };
   };
-in
-{
+in {
   options.${namespace}.development.api-client.apidog = {
     enable = mkEnableOption "Enable Apidog API Client installation";
   };
   config = mkIf apidog.enable {
-    home.packages = [ pkg ];
+    home.packages = [pkg];
     xdg.desktopEntries.apidog = {
       name = "Apidog";
       exec = "${pkg}/bin/apidog %u";
       type = "Application";
-      mimeType = [ "x-scheme-handler/apidog" ];
-      categories = [ "Development" ];
+      mimeType = ["x-scheme-handler/apidog"];
+      categories = ["Development"];
       noDisplay = false;
     };
   };
