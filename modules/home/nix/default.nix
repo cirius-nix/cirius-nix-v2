@@ -4,59 +4,33 @@
   lib,
   pkgs,
   ...
-}:
-let
-  inherit (config.${namespace}) nix;
-  inherit (lib) mkIf mkEnableOption;
+}: let
   inherit (config.snowfallorg) user;
-in
-{
-  options.${namespace}.nix = {
-    enable = mkEnableOption "Enable Nix package manager and related tools";
+in {
+  options.${namespace}.nix = let
+    inherit (lib) mkEnableOption;
+    inherit (lib.${namespace}) strlib;
+  in {
     cachix = {
       enable = mkEnableOption "Enable Cachix binary cache";
-      configFile = lib.mkOption {
-        type = lib.types.str;
-        default = user.home.directory + "/.config/cachix/cachix.dhall";
-        description = "Path to a custom cachix.dhall file to use (string of absolute path)";
+      configFile = strlib.mkOption (user.home.directory + "/.config/cachix/cachix.conf") "Path to a custom cachix.conf file to use (string of absolute path)";
+      secretKeys = {
+        authToken = strlib.mkOption "cachix/auth_token" "SOPS key for Cachix auth token.";
       };
     };
-
-    configFile = lib.mkOption {
-      type = lib.types.str;
-      default = user.home.directory + "/.config/nix/nix.conf";
-      description = "Path to a custom nix.conf file to use (string of absolute path)";
-    };
-    sops = {
-      cachixAuthToken = lib.mkOption {
-        type = lib.types.str;
-        default = "cachix_auth_token";
-        description = "Auth token for Cachix to use with Nix";
-      };
-      ghAccessToken = lib.mkOption {
-        type = lib.types.str;
-        default = "gh/personal/access_token";
-        description = "Access token for GitHub to use with Nix flakes";
-      };
-    };
-
+    configFile = strlib.mkOption (user.home.directory + "/.config/nix/nix.conf") "Path to a custom nix.conf file to use (string of absolute path)";
   };
-  config = mkIf nix.enable {
-    home.packages = [ pkgs.nix-prefetch-github ];
+  config = let
+    nixCfg = config.${namespace}.nix;
+  in {
+    home.packages = [pkgs.nix-prefetch-github];
     sops = {
-      templates."nix.conf" = {
-        path = nix.configFile;
+      templates."${namespace}${user.name}:${nixCfg.cachix.configFile}" = lib.mkIf nixCfg.cachix.enable {
+        path = nixCfg.cachix.configFile;
         mode = "0400";
         content = ''
-          access-tokens = github.com=${config.sops.placeholder."${nix.sops.ghAccessToken}"}
-        '';
-      };
-      templates."cachixConfigFile" = mkIf nix.cachix.enable {
-        path = nix.cachix.configFile;
-        mode = "0400";
-        content = ''
-          { authToken =
-              "${config.sops.placeholder."${nix.sops.cachixAuthToken}"}"
+          {
+            authToken = "${config.sops.placeholder."${nixCfg.cachix.secretKeys.authToken}"}"
           , hostname = "https://cachix.org"
           , binaryCaches = [] : List { name : Text, secretKey : Text }
           }
