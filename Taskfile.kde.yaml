@@ -1,0 +1,16 @@
+version: 3
+tasks:
+  fix:seqFault:
+    desc: "QT/KDE applications seqFault on start"
+    summary: |
+      This is caused by a stale QML cache (https://github.com/NixOS/nixpkgs/issues/177720). A dirty way to fix this is by running on a terminal the following command: 
+    cmds:
+      - find ${XDG_CACHE_HOME:-$HOME/.cache}/**/qmlcache -type f -delete
+  list:plasmoid:
+    desc: "List all plasmoid"
+    cmds:
+      - ls /run/current-system/sw/share/plasma/plasmoids
+  watch:xdgConfig:
+    desc: "Watch file changes in XDG Config HOME"
+    cmds:
+      - inotifywait -m ~/.config

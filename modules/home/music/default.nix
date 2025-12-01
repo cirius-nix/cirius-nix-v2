@@ -1,25 +1,16 @@
 {
-  osConfig,
-  pkgs,
-  config,
-  namespace,
   lib,
+  namespace,
+  pkgs,
   ...
-}:
-let
-  inherit (lib) mkIf mkEnableOption;
-  inherit (config.${namespace}) music;
-  inherit (osConfig.${namespace}.de) hyprland;
+}: let
+  inherit (lib.${namespace}) onLinux;
 in
-{
-  options.${namespace}.music = {
-  };
-  config = {
-    programs.waybar = mkIf hyprland.enable {
-      settings = { };
+  onLinux {inherit pkgs;} {
+    options.${namespace}.music = {};
+    config = {
+      home.packages = [
+        pkgs.spotify
+      ];
     };
-    home.packages = [
-      pkgs.ncspot
-    ];
-  };
-}
+  }

@@ -12,11 +12,11 @@
   namespace,
   pkgs,
   lib,
-  osConfig,
+  osConfig ? {},
   ...
-}:
-let
-  inherit (lib)
+}: let
+  inherit
+    (lib)
     mkIf
     mkOption
     mkEnableOption
@@ -34,14 +34,15 @@ let
 
   # make package
   pkg =
-    if sonarqube.package == null then
+    if sonarqube.package == null
+    then
       (pkgs.stdenv.mkDerivation {
         name = "${pname}-${version}";
         src = pkgs.fetchzip {
           url = "https://binaries.sonarsource.com/Distribution/sonarqube/${pname}-${version}.zip";
           hash = "sha256-5Gtw/65zOlA7vdeHyvQZRj70pksqAePDnFkJ2N7n6IE=";
         };
-        nativeBuildInputs = [ pkgs.unzip ];
+        nativeBuildInputs = [pkgs.unzip];
         installPhase = ''
           set -eux
           # make output dir
@@ -51,10 +52,8 @@ let
           mkdir -p $out/extensions/downloads
         '';
       })
-    else
-      sonarqube.package;
-in
-{
+    else sonarqube.package;
+in {
   options.${namespace}.development.sonarqube = {
     enable = mkEnableOption "Enable Sonarqube.";
     package = mkOption {
@@ -75,7 +74,7 @@ in
     };
     settings = mkOption {
       type = with types; attrsOf str;
-      default = { };
+      default = {};
       example = {
         "sonar.jdbc.username" = "sonar";
         "sonar.jdbc.password" = "sonar";
@@ -89,72 +88,68 @@ in
       dataFile."sonarqube/.keep".text = "";
       stateFile."sonarqube/.keep".text = "";
       cacheFile."sonarqube/.keep".text = "";
-      configFile."sonarqube/config.env".text =
-        let
-          inherit (sonarqube) postgresDB;
-          settings =
-            lib.foldl' lib.recursiveUpdate
-              {
-                "SONAR_JAVA_PATH" = lib.getExe' pkgs.jdk21_headless "java";
-                "SONAR_TELEMETRY_ENABLE" = "false";
-                "SONAR_PATH_DATA" = "${user.home.directory}/.local/share/sonarqube/data";
-                "SONAR_PATH_TEMP" = "${user.home.directory}/.cache/sonarqube/temp";
-                "SONAR_LOG_LEVEL" = "INFO";
-                "SONAR_PATH_LOGS" = "${user.home.directory}/.local/state/sonarqube/logs";
-                "SONAR_LOG_JSONOUTPUT" = "false";
+      configFile."sonarqube/config.env".text = let
+        inherit (sonarqube) postgresDB;
+        settings =
+          lib.foldl' lib.recursiveUpdate
+          {
+            "SONAR_JAVA_PATH" = lib.getExe' pkgs.jdk21_headless "java";
+            "SONAR_TELEMETRY_ENABLE" = "false";
+            "SONAR_PATH_DATA" = "${user.home.directory}/.local/share/sonarqube/data";
+            "SONAR_PATH_TEMP" = "${user.home.directory}/.cache/sonarqube/temp";
+            "SONAR_LOG_LEVEL" = "INFO";
+            "SONAR_PATH_LOGS" = "${user.home.directory}/.local/state/sonarqube/logs";
+            "SONAR_LOG_JSONOUTPUT" = "false";
+          }
+          [
+            sonarqube.settings
+            (lib.optionalAttrs postgresDB.enable (
+              let
+                inherit (config.sops) placeholder;
+                dbName = placeholder."${postgresDB.db.name}";
+                schema = placeholder."${postgresDB.db.schema}";
+                username = placeholder."${postgresDB.writer.username}";
+                password = placeholder."${postgresDB.writer.password}";
+                dbURL = "jdbc:postgresql://localhost:${builtins.toString pgPort}/${dbName}?currentSchema=${schema}";
+              in {
+                SONAR_JDBC_URL = "${dbURL}";
+                SONAR_JDBC_USERNAME = "${username}";
+                SONAR_JDBC_PASSWORD = "${password}";
               }
-              [
-                sonarqube.settings
-                (lib.optionalAttrs postgresDB.enable (
-                  let
-                    inherit (config.sops) placeholder;
-                    dbName = placeholder."${postgresDB.db.name}";
-                    schema = placeholder."${postgresDB.db.schema}";
-                    username = placeholder."${postgresDB.writer.username}";
-                    password = placeholder."${postgresDB.writer.password}";
-                    dbURL = "jdbc:postgresql://localhost:${builtins.toString pgPort}/${dbName}?currentSchema=${schema}";
-                  in
-                  {
-                    SONAR_JDBC_URL = "${dbURL}";
-                    SONAR_JDBC_USERNAME = "${username}";
-                    SONAR_JDBC_PASSWORD = "${password}";
-                  }
-                ))
-              ];
-          mkKeyValue = k: v: "${k}=\"${v}\"\n";
-        in
+            ))
+          ];
+        mkKeyValue = k: v: "${k}=\"${v}\"\n";
+      in
         lib.concatStringsSep "" (lib.mapAttrsToList mkKeyValue settings);
     };
-    systemd.user.services.sonarqube =
-      let
-        workDir = "${pkg}";
-        execStart = ''
-          ${pkgs.jdk21_headless}/bin/java \
-            -Xmx2G -Xms512M \
-            -jar ${workDir}/lib/sonar-application-${version}.jar
-        '';
-      in
-      {
-        Unit = {
-          Description = "SonarQube Service";
-          Wants = [ "network.target" ];
-          After = [
-            "syslog.target"
-            "network.target"
-          ];
-        };
-        Service = {
-          ExecStart = execStart;
-          Restart = "on-failure";
-          RestartSec = "10s";
-          WorkingDirectory = workDir;
-          EnvironmentFile = "%h/.config/sonarqube/config.env";
-          LimitNOFILE = 65536;
-          LimitNPROC = 8192;
-        };
-        Install = {
-          WantedBy = [ "default.target" ];
-        };
+    systemd.user.services.sonarqube = let
+      workDir = "${pkg}";
+      execStart = ''
+        ${pkgs.jdk21_headless}/bin/java \
+          -Xmx2G -Xms512M \
+          -jar ${workDir}/lib/sonar-application-${version}.jar
+      '';
+    in {
+      Unit = {
+        Description = "SonarQube Service";
+        Wants = ["network.target"];
+        After = [
+          "syslog.target"
+          "network.target"
+        ];
       };
+      Service = {
+        ExecStart = execStart;
+        Restart = "on-failure";
+        RestartSec = "10s";
+        WorkingDirectory = workDir;
+        EnvironmentFile = "%h/.config/sonarqube/config.env";
+        LimitNOFILE = 65536;
+        LimitNPROC = 8192;
+      };
+      Install = {
+        WantedBy = ["default.target"];
+      };
+    };
   };
 }

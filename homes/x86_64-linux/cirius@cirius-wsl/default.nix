@@ -23,7 +23,6 @@ in
         in
         {
           "cachix_auth_token" = { };
-          "gh/personal/access_token" = { };
           "ssh/work_private_key" = {
             mode = "0600";
             path = "${config.snowfallorg.user.home.directory}/.ssh/work";

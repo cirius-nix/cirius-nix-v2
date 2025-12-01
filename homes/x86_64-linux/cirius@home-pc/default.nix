@@ -1,122 +1,118 @@
 {
-  pkgs,
+  config,
+  lib,
   ...
-}:
-let
+}: let
   namespace = "cirius-v2";
-in
-{
+  inherit (config.snowfallorg) user;
+in {
+  imports = [
+    ./kde/default.nix
+    ./secrets/default.nix
+  ];
+  # Global options for this namespace
+  options.${namespace} = let
+    inherit (lib.${namespace}) strlib;
+  in {
+    gitConfig = let
+      subGitConfigType = lib.types.submodule {
+        options = {
+          dir = strlib.mkOption "" "Path to git config directory.";
+          configFile = strlib.mkOption "" "Path to git config file.";
+        };
+      };
+      workDir = "${user.home.directory}/Workspaces/github/work/";
+      personalDir = "${user.home.directory}/Workspaces/github/personal/";
+    in {
+      work = lib.mkOption {
+        type = subGitConfigType;
+        default = {
+          dir = workDir;
+          configFile = "${workDir}/.gitconfig";
+        };
+        description = "Git config for work repositories.";
+      };
+      personal = lib.mkOption {
+        type = subGitConfigType;
+        default = {
+          dir = personalDir;
+          configFile = "${personalDir}/.gitconfig";
+        };
+        description = "Git config for personal repositories.";
+      };
+    };
+  };
+
   config = {
     "${namespace}" = {
-      picture = {
-        krita.enable = true;
-        gimp.enable = true;
+      ai = lib.${namespace}.enableAll ["lmstudio" "ollama" "copilot" "gemini"] {
+        ollama.port = 11434;
       };
-      explorer.nautilus.enable = true;
-      term.alacritty = {
-        enable = true;
+      note = lib.${namespace}.enableAll ["obsidian"] {};
+      picture = lib.${namespace}.enableAll ["krita"] {};
+      term = lib.${namespace}.enableAll ["sysMonitor" "starship" "clockify" "zoxide" "atuin" "alacritty" "fish" "zellij" "fzf" "direnv" "taskfile" "devenv"] {
+        fish.aliases = {
+          "rbnix" = "sudo nixos-rebuild switch";
+          "gaa" = "git add .";
+          "gst" = "git status";
+          "gpl" = "git pull origin";
+          "gps" = "git push origin";
+        };
+        clockify.secretKeys = {
+          token = "work/clockify/token";
+          userID = "work/clockify/user_id";
+          workspaceID = "work/clockify/workspace_id";
+        };
       };
       stylix = {
         enable = true;
-        wallpaper = ../../../assets/wallpaper-3.jpg;
+        guiSupported = true;
+        wallpaper = ../../../assets/wallpaper-4.jpg;
       };
-      hyprland = {
-        packages = {
-          icon = pkgs.beauty-line-icon-theme;
-        };
-        plugins = {
-          waybar.enable = true;
-          mako.enable = true;
-          walker.enable = true;
-          grimshot.enable = true;
-          grimshot.editor = "krita";
-        };
-        aliases = {
-          mod = "SUPER";
-          launchBrowser = "zen";
-          launchPrivateBrowser = "zen --private-window";
-          launchTerminal = "alacritty";
-          launchFileManager = "nautilus";
-          launchMenu = "walker";
-          launchAI = ''zen --new-window https://copilot.microsoft.com'';
+      nix = lib.${namespace}.enableAll ["cachix"] {
+        cachix.secretKeys = {
+          authToken = "personal/cachix/auth_token";
         };
       };
-      security = {
-        enable = true;
-      };
-      ai = {
-        copilot = {
-          enable = true;
+      browser = lib.${namespace}.enableAll ["chrome" "zen-browser"] {
+        zen-browser = {
+          containers = [
+            {
+              id = 2;
+              name = "Buuuk";
+              icon = "briefcase";
+              color = "orange";
+              spaceID = "d418a329-32a1-47fe-9f61-8e7c297a9f69";
+              spacePosition = 2000;
+              spaceIcon = "";
+            }
+          ];
         };
-        gemini = {
-          enable = true;
-        };
       };
-      nix.enable = true;
-      browser.zen-browser = {
-        enable = true;
-        containers = [
+      development = lib.${namespace}.enableAll ["docker" "git"] {
+        git.includeConfigs = [
           {
-            id = 2;
-            name = "Buuuk";
-            icon = "briefcase";
-            color = "orange";
-            spaceID = "d418a329-32a1-47fe-9f61-8e7c297a9f69";
-            spacePosition = 2000;
-            spaceIcon = "";
+            condition = "gitdir:${config.${namespace}.gitConfig.work.dir}";
+            path = config.${namespace}.gitConfig.work.configFile;
+          }
+          {
+            condition = "gitdir:${config.${namespace}.gitConfig.personal.dir}";
+            path = config.${namespace}.gitConfig.personal.configFile;
           }
         ];
-      };
-      development = {
-        api-client = {
-          apidog.enable = true;
+        api-client = lib.${namespace}.enableAll ["apidog"] {};
+        infra = {
+          cloud = lib.${namespace}.enableAll ["aws"] {};
+          iac = lib.${namespace}.enableAll ["terraform" "pulumi"] {};
         };
-        git = {
-          enable = true;
-        };
-        command-line = {
-          stat.enable = true;
-          fzf.enable = true;
-          zoxide.enable = true;
-          fish = {
-            enable = true;
-            aliases = {
-              "rbnix" = "sudo nixos-rebuild switch";
-              "gaa" = "git add .";
-              "gst" = "git status";
-              "gpl" = "git pull origin";
-              "gps" = "git push origin";
-            };
-          };
-          starship.enable = true;
-          direnv.enable = true;
-          taskfile.enable = true;
-          zellij.enable = true;
-          nnn.enable = true;
-          devenv = {
-            enable = true;
-          };
-        };
-        infra.enable = true;
-        editors = {
-          datagrip.enable = true;
+        editors = lib.${namespace}.enableAll ["antigravity" "datagrip" "code" "nixvim"] {
           nixvim = {
-            enable = true;
             enableCopilotCompletion = true;
             ai = true;
+            plugins.explorer.alwaysShow = [".sops.yaml" "provision.pg.sql" "mockery.yml"];
           };
         };
-        lang = {
-          terraform.enable = true;
-          nix.enable = true;
-          nodejs = {
-            enable = true;
-          };
-          go = {
-            enable = true;
-          };
-          shell.enable = true;
-        };
+        lang = lib.${namespace}.enableAll ["terraform" "nix" "nodejs" "go" "shell"] {};
       };
     };
   };
