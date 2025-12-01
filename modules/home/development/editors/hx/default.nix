@@ -4,17 +4,16 @@
   lib,
   pkgs,
   ...
-}:
-let
-  inherit (lib)
+}: let
+  inherit
+    (lib)
     mkIf
     mkEnableOption
     mkOption
     types
     ;
   inherit (config.${namespace}.development.editors) hx;
-in
-{
+in {
   options.${namespace}.development.editors.hx = {
     enable = mkEnableOption "Enable Helix Editor";
     package = mkOption {
@@ -24,6 +23,6 @@ in
     };
   };
   config = mkIf hx.enable {
-    home.packages = [ hx.package ];
+    home.packages = [hx.package];
   };
 }

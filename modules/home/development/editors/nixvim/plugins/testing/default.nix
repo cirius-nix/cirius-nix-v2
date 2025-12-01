@@ -2,6 +2,7 @@
   config,
   namespace,
   lib,
+  # pkgs,
   ...
 }:
 let
@@ -12,6 +13,9 @@ in
 {
   config = {
     programs.nixvim = mkIf nixvim.enable {
+      # extraPlugins = [
+      #   pkgs.vimPlugins.nvim-nio
+      # ];
       keymaps = [
         # RunFile tr
         (mkKeymap "<leader>tr" "<cmd>Neotest run file<cr>" "RunFile")
@@ -30,7 +34,13 @@ in
         coverage.enable = true;
         neotest = {
           enable = true;
-          adapters = { };
+          adapters = {
+
+          };
+          settings = {
+            log_level = "debug";
+            summary.follow = true;
+          };
         };
       };
     };

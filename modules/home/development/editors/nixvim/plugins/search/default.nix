@@ -4,13 +4,11 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   inherit (lib.${namespace}.nixvim) mkKeymap;
   inherit (config.${namespace}.development.editors) nixvim;
-in
-{
+in {
   config = mkIf nixvim.enable {
     home.packages = with pkgs; [
       ripgrep
@@ -22,7 +20,7 @@ in
         (mkKeymap "<leader>ff" "<cmd>Telescope find_files<cr>" " Find File")
         (mkKeymap "<leader>fs" "<cmd>GrugFar<cr>" "󱄽 Search")
         (mkKeymap "<leader>fs" ":GrugFar<cr>" {
-          mode = [ "v" ];
+          mode = ["v"];
           options = {
             silent = true;
             noremap = true;
@@ -32,6 +30,7 @@ in
         })
         (mkKeymap "<leader>fi" "<cmd>Telescope nerdy<cr>" "󰲍 Icon picker")
         (mkKeymap "<leader>fr" "<cmd>Telescope resume<cr>" " Resume")
+        (mkKeymap "<leader>fb" "<cmd>Telescope buffers<cr>" "󰓩 Buffers")
       ];
       plugins = {
         # Search & replace

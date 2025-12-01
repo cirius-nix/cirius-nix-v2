@@ -3,40 +3,28 @@
   namespace,
   lib,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf mkEnableOption;
   inherit (config.${namespace}.development.editors) nixvim;
   inherit (config.${namespace}.development.lang) nodejs;
-in
-{
+in {
   options.${namespace}.development.editors.nixvim = {
     enable = mkEnableOption "Enable nixvim editor";
     wsl = mkEnableOption "Enable nixvim editor for WSL";
     ai = mkEnableOption "Enable AI plugin inside nixvim";
   };
   config = mkIf nixvim.enable {
-    # stylix.targets.nixvim.enable = true;
-    ${namespace} = {
-      development.command-line.fish = {
-        interactiveEnvs = {
-          "EDITOR" = "nvim";
-        };
-      };
+    ${namespace}.term.fish.interactiveEnvs = {
+      "EDITOR" = "nvim";
     };
     programs.nixvim = {
       enable = true;
       withNodeJs = nodejs.enable;
       globals = {
         mapleader = " ";
-        maplocalleader = "\\";
-        loaded_netrw = 1;
-        loaded_netrwPlugin = 1;
       };
-      plugins = { };
       colorscheme = "habamax";
-      colorschemes = {
-      };
+      colorschemes = {};
       extraConfigLuaPre = ''
         _M = {};
         _G.FUNCS = {}
