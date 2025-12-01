@@ -5,7 +5,7 @@
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://localhost:5000/postgres</jdbc-url>
+      <jdbc-url>jdbc:postgresql://localhost:5400/postgres</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
     <data-source source="LOCAL" name="sonarqube_local@localhost" uuid="d60a58fb-6b19-4bee-80a4-e38a7f023ec3">
@@ -15,11 +15,18 @@
       <jdbc-url>jdbc:postgresql://localhost:5000/sonarqube_local</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="infisical@localhost" uuid="d346f3fa-0eac-4e6d-80fc-e9513718da78">
+    <data-source source="LOCAL" name="infisical@localhost" uuid="6691308f-6bb9-44ed-b912-f6f72d5ff48a">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://localhost:5000/infisical</jdbc-url>
+      <jdbc-url>jdbc:postgresql://localhost:5400/infisical</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+    <data-source source="LOCAL" name="@localhost" uuid="c79508cd-ff99-4a62-bfd8-212e514cc5e8">
+      <driver-ref>redis</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>jdbc.RedisDriver</jdbc-driver>
+      <jdbc-url>jdbc:redis://localhost:6380/</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

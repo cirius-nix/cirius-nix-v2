@@ -4,21 +4,20 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   inherit (config.${namespace}.ai) copilot;
-  inherit (lib)
+  inherit
+    (lib)
     mkIf
     mkEnableOption
     ;
-in
-{
+in {
   options.${namespace}.ai.copilot = {
     enable = mkEnableOption "Enable GitHub Copilot CLI";
   };
   config = mkIf copilot.enable {
     home.packages = [
-      pkgs.${namespace}.github-copilot-cli
+      pkgs.github-copilot-cli
     ];
   };
 }
