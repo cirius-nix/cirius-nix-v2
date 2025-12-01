@@ -3,18 +3,17 @@
   namespace,
   lib,
   ...
-}:
-let
-  inherit (lib) mkIf mkEnableOption;
-  inherit (config.${namespace}.dev) sonarqube;
-in
-{
+}: {
   options.${namespace}.dev.sonarqube = {
-    enable = mkEnableOption "Enable SonarQube development environment.";
-    postgres = {
-      enable = mkEnableOption "Enable Postgres for SonarQube.";
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Enable SonarQube development environment.";
     };
   };
-  config = mkIf sonarqube.enable {
+  config = lib.mkIf config.${namespace}.dev.sonarqube.enable {
+    services.postgresql = {
+      ensureDatabases = ["sonarqube"];
+    };
   };
 }

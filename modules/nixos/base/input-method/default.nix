@@ -3,19 +3,22 @@
   lib,
   config,
   ...
-}:
-let
+}: let
   inherit (config.${namespace}.base) input-method;
-in
-{
+in {
   options.${namespace}.base.input-method = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Enable input method support.";
+    };
     addons = lib.mkOption {
       type = lib.types.listOf lib.types.package;
-      default = [ ];
+      default = [];
       description = "Additional input method packages to install.";
     };
   };
-  config = {
+  config = lib.mkIf input-method.enable {
     i18n.inputMethod = {
       enable = true;
       type = "fcitx5";
