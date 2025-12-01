@@ -4,40 +4,20 @@
   lib,
   pkgs,
   ...
-}:
-let
-  inherit (lib)
-    mkIf
-    mkEnableOption
-    mkOption
-    mkMerge
-    types
-    foldl'
-    recursiveUpdate
-    mapAttrsToList
-    concatStringsSep
-    concatMapStringsSep
-    ;
-  inherit (types)
-    attrsOf
-    listOf
-    str
-    submodule
-    ;
-  inherit (config.${namespace}.development) lang;
-  inherit (config.${namespace}.development.command-line) fish;
-in
-{
-  options.${namespace}.development.command-line.fish = {
+}: {
+  options.${namespace}.term.fish = let
+    inherit (lib) types mkEnableOption mkOption;
+    inherit (types) attrsOf listOf str submodule;
+  in {
     enable = mkEnableOption "Enable fish shell";
     aliases = mkOption {
       type = attrsOf str;
-      default = { };
+      default = {};
       description = "Shell command aliases";
     };
     interactiveEnvs = mkOption {
       type = attrsOf str;
-      default = { };
+      default = {};
       description = "Set environment variables in interactive shell";
     };
     interactiveCMDs = mkOption {
@@ -49,41 +29,44 @@ in
           };
           args = mkOption {
             type = listOf str;
-            default = [ ];
+            default = [];
             description = "Arguments to pass to command";
           };
         };
       });
-      default = { };
+      default = {};
       description = "List of command going to run in interactive shell";
     };
     interactiveFuncs = mkOption {
       type = attrsOf str;
-      default = { };
+      default = {};
       description = "List of function to be created in interactive shell";
     };
     paths = mkOption {
       type = listOf str;
-      default = [ ];
+      default = [];
       description = "Append new paths to $PATH";
     };
   };
-  config = mkIf fish.enable {
-    programs.fish = {
-      enable = true;
-      shellAliases = mkMerge [
-        {
-          "g" = "git";
-        }
-        fish.aliases
-      ];
-      interactiveShellInit =
-        let
+  config = let
+    inherit (lib) mkIf mkMerge foldl' recursiveUpdate mapAttrsToList concatStringsSep concatMapStringsSep;
+    cfg = (config.${namespace}.term).fish;
+  in
+    mkIf cfg.enable {
+      programs.fish = {
+        enable = true;
+        shellAliases = mkMerge [
+          {
+            "g" = "git";
+          }
+          cfg.aliases
+        ];
+        interactiveShellInit = let
           # env conversion.
-          envs = foldl' recursiveUpdate { } [ fish.interactiveEnvs ];
+          envs = foldl' recursiveUpdate {} [cfg.interactiveEnvs];
           mkEnv = name: value: "set -gx ${name} ${value}";
           # func conversion.
-          fns = foldl' recursiveUpdate { } [ fish.interactiveFuncs ];
+          fns = foldl' recursiveUpdate {} [cfg.interactiveFuncs];
           mkFn = name: body: ''
             function ${name}
               ${body}
@@ -93,8 +76,8 @@ in
           paths = (
             lib.unique (
               builtins.concatLists [
-                [ "$HOME/.local/bin" ]
-                fish.paths
+                ["$HOME/.local/bin"]
+                cfg.paths
               ]
             )
           );
@@ -106,53 +89,39 @@ in
             end
           '';
           # cmds conversion.
-          cmds = foldl' recursiveUpdate { } [ fish.interactiveCMDs ];
+          cmds = foldl' recursiveUpdate {} [cfg.interactiveCMDs];
           mkArgs = args: concatStringsSep " " (lib.filter (x: x != "" && x != null) args);
           mkCmd = cmd: ''
             if type -q ${cmd.command}
               ${cmd.command} ${mkArgs cmd.args}
             end
           '';
-        in
-        ''
+        in ''
           set fish_greeting "";
           ${concatStringsSep "\n" (mapAttrsToList mkEnv envs)}
           ${concatStringsSep "\n" (mapAttrsToList mkFn fns)}
           ${concatMapStringsSep "\n" mkPath paths}
           ${concatStringsSep "\n" (map mkCmd (lib.attrValues cmds))}
         '';
-      plugins = [
-        {
-          name = "autopair";
-          inherit (pkgs.fishPlugins.autopair) src;
-        }
-        {
-          name = "bass";
-          inherit (pkgs.fishPlugins.bass) src;
-        }
-        {
-          name = "fish-ssh";
-          src = pkgs.fetchFromGitHub {
-            owner = "danhper";
-            repo = "fish-ssh-agent";
-            rev = "master";
-            sha256 = "sha256-cFroQ7PSBZ5BhXzZEKTKHnEAuEu8W9rFrGZAb8vTgIE=";
-          };
-        }
-        {
-          name = "z";
-          src = pkgs.fetchFromGitHub {
-            owner = "jethrokuan";
-            repo = "z";
-            rev = "master";
-            sha256 = "sha256-emmjTsqt8bdI5qpx1bAzhVACkg0MNB/uffaRjjeuFxU=";
-          };
-        }
-      ]
-      ++ (lib.optional lang.nodejs.enable {
-        name = "nvm";
-        inherit (pkgs.fishPlugins.nvm) src;
-      });
+        plugins = [
+          {
+            name = "autopair";
+            inherit (pkgs.fishPlugins.autopair) src;
+          }
+          {
+            name = "bass";
+            inherit (pkgs.fishPlugins.bass) src;
+          }
+          {
+            name = "fish-ssh";
+            src = pkgs.fetchFromGitHub {
+              owner = "danhper";
+              repo = "fish-ssh-agent";
+              rev = "master";
+              sha256 = "sha256-cFroQ7PSBZ5BhXzZEKTKHnEAuEu8W9rFrGZAb8vTgIE=";
+            };
+          }
+        ];
+      };
     };
-  };
 }
