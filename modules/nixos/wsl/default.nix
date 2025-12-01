@@ -3,12 +3,10 @@
   namespace,
   lib,
   ...
-}:
-let
+}: let
   inherit (config.${namespace}) wsl;
   inherit (lib) mkIf mkEnableOption;
-in
-{
+in {
   options.${namespace}.wsl = {
     enable = mkEnableOption "Enable WSL specific settings.";
     defaultUser = lib.mkOption {

@@ -1,0 +1,15 @@
+CREATE DATABASE infisical;
+
+-- Create infisical_admin user with comprehensive privileges
+CREATE USER infisical_admin WITH PASSWORD 'your_secure_password';
+
+-- Grant connection privilege to the database
+GRANT CONNECT ON DATABASE infisical TO infisical_admin;
+
+-- Connect to infisical database to grant schema and object privileges
+\c infisical
+
+-- Grant ability to create new schemas in the database
+GRANT CREATE ON DATABASE infisical TO infisical_admin;
+
+GRANT ALL PRIVILEGES ON SCHEMA public TO infisical_admin;

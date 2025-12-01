@@ -3,6 +3,12 @@ includes:
   secrets:
     taskfile: ./secrets/Taskfile.yaml
     optional: true
+  hyprland:
+    taskfile: ./Taskfile.hyprland.yaml
+    optional: true
+  kde:
+    taskfile: ./Taskfile.kde.yaml
+    optional: true
 tasks:
   default:
     desc: "List all of tasks"
@@ -41,8 +47,7 @@ tasks:
         TMP_DIR=.temp/firefox-addons
         mkdir -p .temp/firefox-addons
         PACKAGE_NAME=$(echo "{{ .URL }}" | sed 's#.*/\([^/]*\)-[0-9].*#\1#')
-        LATEST_URL="https://addons.mozilla.org/firefox/downloads/latest/$PACKAGE_NAME/latest.xpi"
-        wget -O "${TMP_DIR}/${PACKAGE_NAME}.xpi" "${LATEST_URL}"
+        wget -O "${TMP_DIR}/${PACKAGE_NAME}.xpi" "{{ .URL }}"
         unzip -q -o "${TMP_DIR}/${PACKAGE_NAME}.xpi" -d "${TMP_DIR}/${PACKAGE_NAME}"
         cat "${TMP_DIR}/${PACKAGE_NAME}/manifest.json" | jq -r '.browser_specific_settings.gecko.id'
         echo $PACKAGE_NAME
@@ -55,3 +60,9 @@ tasks:
     cmds:
       - nix-locate {{ .CLI_ARGS }}
 
+  build-drv:
+    desc: Build a derivation
+    vars:
+      DRV: '{{ index .CLI_ARGS_LIST 0 }}'
+    cmds:
+      - nix build --rebuild -L --keep-failed '{{ .DRV }}^*'
