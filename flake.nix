@@ -2,6 +2,10 @@
   description = "Cirius Nix Version 2";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nur = {
+      url = "github:nix-community/NUR";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # Snowfall lib for project structure.
     snowfall-flake = {
       url = "github:snowfallorg/flake";
@@ -21,9 +25,24 @@
       url = "github:hyprwm/Hyprland";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    plasma-manager = {
+      url = "github:nix-community/plasma-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
+    kwin-effects-forceblur = {
+      url = "github:taj-ny/kwin-effects-forceblur";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     walker = {
       url = "github:abenz1267/walker";
-      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    hyprshell = {
+      url = "github:H3rmt/hyprshell";
+    };
+    split-monitor-workspaces = {
+      url = "github:Duckonaut/split-monitor-workspaces";
+      inputs.hyprland.follows = "hyprland";
     };
     # WSL support.
     nixos-wsl = {
@@ -54,65 +73,73 @@
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-index-database.url = "github:nix-community/nix-index-database";
-    nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
+    lix = {
+      url = "https://git.lix.systems/lix-project/lix/archive/main.tar.gz";
+      flake = false;
+    };
+    lix-module = {
+      url = "https://git.lix.systems/lix-project/nixos-module/archive/main.tar.gz";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.lix.follows = "lix";
+    };
+    alejandra.url = "github:kamadorueda/alejandra/4.0.0";
+    tahoekde = {
+      url = "github:hieutran21198/MacTahoe-kde";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
-  outputs =
-    inputs:
-    let
-      lib = inputs.snowfall-lib.mkLib {
-        inherit inputs;
-        src = ./.;
-        snowfall = {
-          meta = {
-            name = "cirius-nix-v2";
-            title = "Cirius Nix v2";
-          };
-          namespace = "cirius-v2";
+  outputs = inputs: let
+    lib = inputs.snowfall-lib.mkLib {
+      inherit inputs;
+      src = ./.;
+      snowfall = {
+        meta = {
+          name = "cirius-nix-v2";
+          title = "Cirius Nix v2";
         };
-        # perSystem =
-        # { config, ... }:
-        # {
-        #   devenv.shells.default = {
-        #     packages = [ config.packages.default ];
-        #     enterShell = ''
-        #       echo "Welcome to Cirius Nix v2 development shell"
-        #     '';
-        #   };
-        # };
+        namespace = "cirius-v2";
       };
-
-    in
+    };
+    sharedModules = builtins.attrValues (lib.snowfall.module.create-modules {
+      src = ./modules/shared;
+    });
+    debug = {
+      inherit sharedModules;
+    };
+  in
     lib.mkFlake {
       channels-config = {
         allowUnfree = true;
       };
       # Add overlays for the `nixpkgs` channel.
-      # overlays = with inputs; [
-      # ];
+      overlays = with inputs; [
+        nur.overlays.default
+      ];
       # system defined in systems/{arch}/{host}
       systems.modules = {
         # add modules to all nixos system.
-        nixos = with inputs; [
-          nix-index-database.nixosModules.nix-index
-          # lix-module.nixosModules.default
-          sops-nix.nixosModules.sops
-          # nixos wsl support
-          nixos-wsl.nixosModules.default
-          # stylix theming
-          stylix.nixosModules.stylix
-          # hyprland
-          hyprland.nixosModules.default
-          walker.nixosModules.default
-
-        ];
+        nixos = with inputs;
+          [
+            lix-module.nixosModules.default
+            sops-nix.nixosModules.sops
+            # nixos wsl support
+            nixos-wsl.nixosModules.default
+            # stylix theming
+            stylix.nixosModules.stylix
+            # hyprland
+            hyprland.nixosModules.default
+            walker.nixosModules.default
+          ]
+          ++ sharedModules;
         # add modules to all darwin system.
-        darwin = with inputs; [
-          # lix support
-          sops-nix.darwinModules.sops
-          # stylix theming
-          stylix.darwinModules.stylix
-        ];
+        darwin = with inputs;
+          [
+            # lix support
+            sops-nix.darwinModules.sops
+            # stylix theming
+            stylix.darwinModules.stylix
+          ]
+          ++ sharedModules;
       };
       # home defined in homes/{arch}/{username}@{host}
       homes = {
@@ -129,9 +156,17 @@
           # hyprland
           hyprland.homeManagerModules.default
           walker.homeManagerModules.default
+          # KDE
+          plasma-manager.homeModules.plasma-manager
+          hyprshell.homeModules.hyprshell
+          # Home manager module
+          inputs.nur.modules.homeManager.default
         ];
       };
-      packages = { };
-      outputs-builder = channels: { formatter = channels.nixpkgs.nixfmt-rfc-style; };
+      packages = {};
+      outputs-builder = channels: {
+        formatter = channels.nixpkgs.nixfmt-rfc-style;
+        debug = debug;
+      };
     };
 }
