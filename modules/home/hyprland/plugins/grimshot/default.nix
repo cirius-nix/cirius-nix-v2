@@ -2,7 +2,7 @@
   config,
   namespace,
   lib,
-  osConfig,
+  osConfig ? {},
   pkgs,
   ...
 }:

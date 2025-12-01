@@ -1,0 +1,56 @@
+version: 3
+tasks:
+  preview:
+    desc: "Preview generated Hyprland configuration without switching"
+    cmds:
+      - |
+        echo "🔧 Generating Hyprland configuration preview..."
+        echo "=============================================="
+        nix eval --impure --expr '(builtins.getFlake (builtins.toString ./.)).nixosConfigurations.home-pc.config.home-manager.users.cirius.wayland.windowManager.hyprland.extraConfig' | sed 's/\\n/\n/g' | sed 's/^"//; s/"$//'
+  preview:save:
+    desc: "Save generated Hyprland configuration to file"
+    vars:
+      OUTPUT_FILE: '{{ .OUTPUT_FILE | default "~/.config/hypr/hyprland.conf" }}'
+    cmds:
+      - |
+        echo "🔧 Generating Hyprland configuration..."
+        rm -rf {{ .OUTPUT_FILE }}
+        nix eval --impure --expr '(builtins.getFlake (builtins.toString ./.)).nixosConfigurations.home-pc.config.home-manager.users.cirius.wayland.windowManager.hyprland.extraConfig' | sed 's/\\n/\n/g' | sed 's/^"//; s/"$//' > {{ .OUTPUT_FILE }}
+        echo "✅ Configuration saved to: {{ .OUTPUT_FILE }}"
+        echo "📊 Lines: $(wc -l < {{ .OUTPUT_FILE }})"
+        echo "📋 Preview (first 20 lines):"
+        head -20 {{ .OUTPUT_FILE }}
+  preview:hyprland:bindings:
+    desc: "Show only the key bindings from Hyprland configuration"
+    cmds:
+      - |
+        echo "🎯 Hyprland Key Bindings Preview"
+        echo "==============================="
+        echo ""
+        echo "📌 Global Bindings (Default Keygroup):"
+        echo "--------------------------------------"
+        nix eval --impure --expr '(builtins.getFlake (builtins.toString ./.)).nixosConfigurations.home-pc.config.home-manager.users.cirius.wayland.windowManager.hyprland.extraConfig' | sed 's/\\n/\n/g' | sed 's/^"//; s/"$//' | grep '^bind = $mod' | head -20
+        echo ""
+        echo "🔑 Keygroup Submaps:"
+        echo "-------------------"
+        nix eval --impure --expr '(builtins.getFlake (builtins.toString ./.)).nixosConfigurations.home-pc.config.home-manager.users.cirius.wayland.windowManager.hyprland.extraConfig' | sed 's/\\n/\n/g' | sed 's/^"//; s/"$//' | grep 'submap =' | head -10
+        echo ""
+        echo "🎮 App Launch Bindings:"
+        echo "----------------------"
+        nix eval --impure --expr '(builtins.getFlake (builtins.toString ./.)).nixosConfigurations.home-pc.config.home-manager.users.cirius.wayland.windowManager.hyprland.extraConfig' | sed 's/\\n/\n/g' | sed 's/^"//; s/"$//' | grep 'exec,' | head -10
+  preview:summary:
+    desc: "Show quick summary of Hyprland configuration"
+    cmds:
+      - |
+        echo "📊 Hyprland Configuration Summary"
+        echo "================================="
+        CONFIG=$(nix eval --impure --expr '(builtins.getFlake (builtins.toString ./.)).nixosConfigurations.home-pc.config.home-manager.users.cirius.wayland.windowManager.hyprland.extraConfig' | sed 's/\\n/\n/g' | sed 's/^"//; s/"$//')
+        echo "📋 Total lines: $(echo "$CONFIG" | wc -l)"
+        echo "🔗 Total bindings: $(echo "$CONFIG" | grep '^bind' | wc -l)"
+        echo "🎯 Global bindings: $(echo "$CONFIG" | grep '^bind = $mod' | wc -l)"
+        echo "🔑 Keygroups: $(echo "$CONFIG" | grep 'submap =' | grep -v reset | grep -v '^#' | wc -l)"
+        echo "🎮 App launches: $(echo "$CONFIG" | grep 'exec,' | wc -l)"
+        echo "🪟 Window rules: $(echo "$CONFIG" | grep 'windowrule' | wc -l)"
+        echo ""
+        echo "🎯 Available keygroups:"
+        echo "$CONFIG" | grep 'submap =' | grep -v reset | grep -v '^#' | sed 's/.*submap = /  • /' | sort -u

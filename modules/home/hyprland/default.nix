@@ -2,81 +2,16 @@
   config,
   namespace,
   lib,
-  osConfig,
   pkgs,
+  inputs,
+  system,
   ...
-}:
-let
-  inherit (lib) mkIf mkForce;
-  inherit (lib.${namespace}) mkStrOption mkIntOption;
-  inherit (osConfig.${namespace}.de) hyprland;
-  hyprlandHome = config.${namespace}.hyprland;
-
-  # alias map attribute set from k:v to to $k:v
-  aliases = lib.attrsets.mapAttrs' (name: value: {
-    name = "$" + "${name}";
-    inherit value;
-  }) hyprlandHome.aliases;
-
-  # from 1 to 9
-  wsBindings = builtins.concatLists (
-    builtins.genList (
-      i:
-      let
-        ws = i + 1;
-      in
-      [
-        "$mod, code:1${toString i}, workspace, ${toString ws}"
-        "$mod SHIFT, code:1${toString i}, movetoworkspace, ${toString ws}"
-      ]
-    ) 9
-  );
-
-  themePkg = hyprlandHome.packages.theme;
-  iconPkg = hyprlandHome.packages.icon;
-
-  onEmptyWorkspaceOption = lib.mkOption {
-    type =
-      with lib.types;
-      listOf (submodule {
-        options = {
-          idx = mkIntOption 1 "Workspace index, from 1 to 9.";
-          app = mkStrOption "" "Application to launch.";
-          icon = mkStrOption null "Icon for the workspace.";
-        };
-      });
-    default = [
-      {
-        idx = 1;
-        app = "$launchBrowser";
-        icon = "";
-      }
-      {
-        idx = 2;
-        app = "$launchAPIClient";
-        icon = "󰊳";
-      }
-      {
-        idx = 3;
-        app = "$launchTerminal";
-        icon = "";
-      }
-      {
-        idx = 4;
-        app = "$launchDatabaseEditor";
-        icon = "";
-      }
-      {
-        idx = 5;
-        app = "$launchMusicPlayer";
-        icon = "";
-      }
-    ];
-    description = "List of application to create on empty.";
-  };
-in
+} @ params:
+lib.${namespace}.hyprland.applyAttrOnEnabled params
 {
-  options.${namespace}.hyprland = {
+  options.${namespace}.hyprland = let
+    inherit (lib.${namespace}) mkStrOption mkIntOption;
+  in {
     home.sessionVariables = {
       MOZ_ENABLE_WAYLAND = "1";
       XDG_SESSION_TYPE = "wayland";
@@ -93,43 +28,65 @@ in
         description = "Additional packages to install for hyprland.";
       };
     };
+    floatingSize = {
+      width = mkIntOption 800 "Default initial width for floating window.";
+      height = mkIntOption 600 "Default initial height for floating window.";
+    };
+    floatingSizeOnCls = lib.mkOption {
+      type = with lib.types;
+        listOf (submodule {
+          options = {
+            cls = mkStrOption "" "Window class name.";
+            width = mkIntOption 800 "Initial width.";
+            height = mkIntOption 600 "Initial height.";
+          };
+        });
+      default = [];
+      description = "List of window classes to set initial size.";
+    };
+    floatingOnCls = lib.mkOption {
+      type = with lib.types; listOf str;
+      default = ["^(tgpt|bluetui|wiremix|btop|calcurse)$"];
+      description = "List of window classes to always float.";
+    };
     aliases = {
       mod = mkStrOption "SUPER" "Main modifier";
       raiseVol = mkStrOption ''wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 10%+'' "Increase volume";
       lowerVol = mkStrOption ''wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 10%-'' "Decrease volume";
       muteVol = mkStrOption ''wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle'' "Mute volume";
       lock = mkStrOption "hyprlock" "Lock screen";
-      launchBrowser = mkStrOption "zen" "Browser";
-      launchPrivateBrowser = mkStrOption "zen --private-window" "Private browser";
-      launchTerminal = mkStrOption "alacritty" "Terminal";
-      launchFileManager = mkStrOption "alacritty -e nnn" "File manager";
-      launchMenu = mkStrOption "walker" "Menu executor";
-      launchAI = mkStrOption ''alacritty -e "tgpt --interactive-shell"'' "AI";
-      launchBtop = mkStrOption "alacritty --class btop -e btop" "System monitor";
-      launchWifiSelector = mkStrOption "alacritty --class nmtui -e nmtui-connect" "WiFi selector";
-      launchBluetoothManager = mkStrOption "alacritty --class bluetui -e bluetui" "Bluetooth manager";
-      launchAudioManager = mkStrOption "alacritty --class wiremix -e wiremix" "Audio manager";
-      launchAudioVisualizer = mkStrOption "NickvisionCavalier.GNOME" "Audio visualizer";
-      launchCalendar = mkStrOption "alacritty --class calcurse -e calcurse" "Calendar application";
+      floatingFlag = mkStrOption "floatingWindow" "Floating window flag";
       launchScreenshotArea = mkStrOption "grimblast --notify copy area" "Screenshot area";
-      launchDatabaseEditor = mkStrOption "datagrip" "Database editor";
-      launchAPIClient = mkStrOption "apidog" "API client";
-    };
-    workspace = {
-      onEmpty = onEmptyWorkspaceOption;
     };
   };
-  config = mkIf hyprland.enable {
+  config = let
+    hyprlandHome = config.${namespace}.hyprland;
+
+    # alias map attribute set from k:v to to $k:v
+    aliases =
+      lib.attrsets.mapAttrs' (name: value: {
+        name = "$" + "${name}";
+        inherit value;
+      })
+      hyprlandHome.aliases;
+
+    iconPkg = hyprlandHome.packages.icon;
+  in {
     stylix = {
       targets = {
         hyprland.enable = true;
         hyprpaper.enable = config.services.hyprpaper.enable;
         hyprlock.enable = config.programs.hyprlock.enable;
+        qt = {
+          platform = "qtct";
+        };
       };
     };
-    programs.kitty.enable = true;
-    programs.hyprlock = {
-      enable = true;
+    programs = {
+      kitty.enable = true;
+      hyprlock = {
+        enable = true;
+      };
     };
     home = {
       packages = [
@@ -144,12 +101,12 @@ in
       };
     };
 
+    qt = {
+      enable = true;
+    };
+
     gtk = {
       enable = true;
-      theme = {
-        package = themePkg;
-        name = themePkg.pname;
-      };
       iconTheme = {
         package = iconPkg;
         name = iconPkg.pname;
@@ -181,11 +138,15 @@ in
     };
     # ensure these variables should not be modified by any profile.
     wayland.windowManager.hyprland = {
-      systemd.variables = mkForce [ "--all" ];
-      enable = mkForce true;
-      package = mkForce null;
-      portalPackage = mkForce null;
+      systemd.variables = lib.mkForce ["--all"];
+      enable = lib.mkForce true;
+      package = lib.mkForce inputs.hyprland.packages.${system}.hyprland;
+      portalPackage = lib.mkForce null;
+      # plugins = [
+      #   inputs.split-monitor-workspaces.packages.${system}.split-monitor-workspaces
+      # ];
       extraConfig = ''
+        misc:animate_manual_resizes = true
         env=ELECTRON_OZONE_PLATFORM_HINT,wayland
 
         exec-once = fcitx5 -d
@@ -193,18 +154,13 @@ in
 
         windowrule = opacity 0.97 0.9, class:.*
       '';
-      settings = lib.foldl' lib.recursiveUpdate { } [
+
+      settings = lib.foldl' lib.recursiveUpdate {} [
         aliases
         {
           # ps -eo pid,comm --sort=comm | grep -iE "firefox|kitty|code|steam|alacritty"
           bind = [
             # Apps
-            "$mod, b, exec, $launchBrowser"
-            "$mod SHIFT, B, exec, $launchPrivateBrowser"
-            "$mod, Return, exec, $launchTerminal"
-            "$mod, E, exec, $launchFileManager"
-            "$mod, Space, exec, $launchMenu"
-            "$mod, A, exec, $launchAI"
 
             # Screenshots
             "$mod SHIFT, S, exec, $launchScreenshotArea"
@@ -212,32 +168,13 @@ in
             # Window Management
             "$mod, Q, killactive,"
             "$mod SHIFT, Q, forcekillactive,"
-            "$mod, F, fullscreen, 1"
-            "$mod, V, togglefloating,"
-            "$mod, P, pseudo," # pseudo-tiling
-            "$mod, J, togglesplit," # dwindle
-
-            # Focus
-            "$mod, left, movefocus, l"
-            "$mod, right, movefocus, r"
-            "$mod, up, movefocus, u"
-            "$mod, down, movefocus, d"
-
-            # Move windows
-            "$mod SHIFT, left, movewindow, l"
-            "$mod SHIFT, right, movewindow, r"
-            "$mod SHIFT, up, movewindow, u"
-            "$mod SHIFT, down, movewindow, d"
 
             # System
-            "$mod, L, exec, $lock"
             "$mod, Escape, exec, hyprctl dispatch exit"
-            # ", Print, exec, grimshot --notify save area"
             ", XF86AudioRaiseVolume, exec, $raiseVol"
             ", XF86AudioLowerVolume, exec, $lowerVol"
             ", XF86AudioMute, exec, $muteVol"
-          ]
-          ++ wsBindings;
+          ];
           bindm = [
             "$mod, mouse:272, movewindow"
             "$mod, mouse:273, resizewindow"
@@ -249,6 +186,25 @@ in
           ];
         }
         {
+          windowrule = let
+            inherit (hyprlandHome) floatingSize;
+          in
+            [
+              "opacity 0.97 0.9, class:.*"
+              "size ${builtins.toString floatingSize.width} ${builtins.toString floatingSize.height}, floating:1, class:^(?!datagrip$).*"
+            ]
+            ++ (lib.map (cls: "float, class:${cls}") hyprlandHome.floatingOnCls)
+            ++ (lib.map (
+                entry: "size ${toString entry.width} ${toString entry.height}, class:${entry.cls}"
+              )
+              hyprlandHome.floatingSizeOnCls)
+            ++ [
+              "float,class:^(xdg-desktop-portal-gtk)$"
+            ];
+          layerrule = [
+            "blur,bar-0"
+            "blurpopups"
+          ];
           xwayland = {
             force_zero_scaling = true;
           };
@@ -259,12 +215,12 @@ in
               ignore_opacity = true;
             };
           };
-          env = [ ];
-          workspace =
-            let
-              toWorkspaceLine = entry: "${toString entry.idx}, on-created-empty:${entry.app}";
-            in
-            (map toWorkspaceLine hyprlandHome.workspace.onEmpty) ++ [ ];
+          env = [
+          ];
+          input = {
+            repeat_rate = 50;
+            repeat_delay = 300;
+          };
         }
       ];
     };
