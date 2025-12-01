@@ -66,7 +66,6 @@ in {
       };
       stylix = {
         enable = true;
-        guiSupported = true;
         wallpaper = ../../../assets/wallpaper-4.jpg;
       };
       nix = lib.${namespace}.enableAll ["cachix"] {
