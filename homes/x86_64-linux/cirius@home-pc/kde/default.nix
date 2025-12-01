@@ -6,7 +6,7 @@
 }: let
   namespace = "cirius-v2";
 in {
-  ${namespace} = lib.${namespace}.kde.applyAttrOnEnabled {inherit namespace pkgs osConfig;} {
+  ${namespace} = lib.${namespace}.kde.onEnabled {inherit namespace pkgs osConfig;} {
     kde = {
       themeProfile = "tahoe";
       profile.tahoe = {

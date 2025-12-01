@@ -22,7 +22,7 @@
     mkEnableOption
     types
     ;
-  inherit (lib.${namespace}) mkStrOption;
+  inherit (lib.${namespace}) strlib;
 
   inherit (config.${namespace}.development) sonarqube;
   pgPort = ((osConfig.${namespace}.db).postgres).port;
@@ -64,12 +64,12 @@ in {
     postgresDB = {
       enable = mkEnableOption "Enable Postgres database support.";
       db = {
-        name = mkStrOption "db/postgres/databases/sonarqube/db/name" "Sonarqube database name.";
-        schema = mkStrOption "db/postgres/databases/sonarqube/db/schema" "Sonarqube database schema.";
+        name = strlib.mkOption "db/postgres/databases/sonarqube/db/name" "Sonarqube database name.";
+        schema = strlib.mkOption "db/postgres/databases/sonarqube/db/schema" "Sonarqube database schema.";
       };
       user = {
-        username = mkStrOption "db/postgres/databases/sonarqube/users/writer/username" "Sonarqube database username.";
-        password = mkStrOption "db/postgres/users/sonarqube/users/writer/password" "Sonarqube database user password.";
+        username = strlib.mkOption "db/postgres/databases/sonarqube/users/writer/username" "Sonarqube database username.";
+        password = strlib.mkOption "db/postgres/users/sonarqube/users/writer/password" "Sonarqube database user password.";
       };
     };
     settings = mkOption {

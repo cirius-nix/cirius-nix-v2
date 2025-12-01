@@ -7,10 +7,10 @@
 }: {
   options.${namespace}.development.editors.nixvim.plugins.explorer = let
     inherit (lib) types;
-    inherit (lib.${namespace}) mkListOption;
+    inherit (lib.${namespace}) listlib;
   in {
-    alwaysShow = mkListOption types.str [] "List of filenames to always show in the explorer";
-    alwaysShowByPattern = mkListOption types.str [] "List of filename patterns to always show in the explorer";
+    alwaysShow = listlib.mkOption types.str [] "List of filenames to always show in the explorer";
+    alwaysShowByPattern = listlib.mkOption types.str [] "List of filename patterns to always show in the explorer";
   };
   config = let
     inherit (lib.${namespace}.nixvim) mkKeymap;

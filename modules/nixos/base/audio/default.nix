@@ -4,9 +4,9 @@
   namespace,
   ...
 } @ params: let
-  guiEnabled = lib.${namespace}.system.checkGuiEnabled params;
+  deEnabled = lib.${namespace}.de.checkEnabled params;
 in {
-  environment.systemPackages = lib.optionals guiEnabled (with pkgs; [
+  environment.systemPackages = lib.optionals deEnabled (with pkgs; [
     wiremix
     pavucontrol
   ]);

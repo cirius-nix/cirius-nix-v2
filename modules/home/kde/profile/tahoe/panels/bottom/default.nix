@@ -4,7 +4,7 @@
   lib,
   ...
 } @ params:
-lib.${namespace}.kde.applyAttrOnEnabled params {
+lib.${namespace}.kde.onEnabled params {
   config = let
     inherit (config.${namespace}.kde.profile.tahoe) variables;
   in {

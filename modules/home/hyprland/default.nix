@@ -5,44 +5,43 @@
   osConfig,
   pkgs,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf mkForce;
-  inherit (lib.${namespace}) mkStrOption mkIntOption;
+  inherit (lib.${namespace}) strlib intlib;
   inherit (osConfig.${namespace}.de) hyprland;
   hyprlandHome = config.${namespace}.hyprland;
 
   # alias map attribute set from k:v to to $k:v
-  aliases = lib.attrsets.mapAttrs' (name: value: {
-    name = "$" + "${name}";
-    inherit value;
-  }) hyprlandHome.aliases;
+  aliases =
+    lib.attrsets.mapAttrs' (name: value: {
+      name = "$" + "${name}";
+      inherit value;
+    })
+    hyprlandHome.aliases;
 
   # from 1 to 9
   wsBindings = builtins.concatLists (
     builtins.genList (
-      i:
-      let
+      i: let
         ws = i + 1;
-      in
-      [
+      in [
         "$mod, code:1${toString i}, workspace, ${toString ws}"
         "$mod SHIFT, code:1${toString i}, movetoworkspace, ${toString ws}"
       ]
-    ) 9
+    )
+    9
   );
 
   themePkg = hyprlandHome.packages.theme;
   iconPkg = hyprlandHome.packages.icon;
 
   onEmptyWorkspaceOption = lib.mkOption {
-    type =
-      with lib.types;
+    type = with lib.types;
       listOf (submodule {
         options = {
-          idx = mkIntOption 1 "Workspace index, from 1 to 9.";
-          app = mkStrOption "" "Application to launch.";
-          icon = mkStrOption null "Icon for the workspace.";
+          idx = intlib.mkOption 1 "Workspace index, from 1 to 9.";
+          app = strlib.mkOption "" "Application to launch.";
+          icon = strlib.mkOption' null "Icon for the workspace.";
         };
       });
     default = [
@@ -74,8 +73,7 @@ let
     ];
     description = "List of application to create on empty.";
   };
-in
-{
+in {
   options.${namespace}.hyprland = {
     home.sessionVariables = {
       MOZ_ENABLE_WAYLAND = "1";
@@ -94,26 +92,26 @@ in
       };
     };
     aliases = {
-      mod = mkStrOption "SUPER" "Main modifier";
-      raiseVol = mkStrOption ''wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 10%+'' "Increase volume";
-      lowerVol = mkStrOption ''wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 10%-'' "Decrease volume";
-      muteVol = mkStrOption ''wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle'' "Mute volume";
-      lock = mkStrOption "hyprlock" "Lock screen";
-      launchBrowser = mkStrOption "zen" "Browser";
-      launchPrivateBrowser = mkStrOption "zen --private-window" "Private browser";
-      launchTerminal = mkStrOption "alacritty" "Terminal";
-      launchFileManager = mkStrOption "alacritty -e nnn" "File manager";
-      launchMenu = mkStrOption "walker" "Menu executor";
-      launchAI = mkStrOption ''alacritty -e "tgpt --interactive-shell"'' "AI";
-      launchBtop = mkStrOption "alacritty --class btop -e btop" "System monitor";
-      launchWifiSelector = mkStrOption "alacritty --class nmtui -e nmtui-connect" "WiFi selector";
-      launchBluetoothManager = mkStrOption "alacritty --class bluetui -e bluetui" "Bluetooth manager";
-      launchAudioManager = mkStrOption "alacritty --class wiremix -e wiremix" "Audio manager";
-      launchAudioVisualizer = mkStrOption "NickvisionCavalier.GNOME" "Audio visualizer";
-      launchCalendar = mkStrOption "alacritty --class calcurse -e calcurse" "Calendar application";
-      launchScreenshotArea = mkStrOption "grimblast --notify copy area" "Screenshot area";
-      launchDatabaseEditor = mkStrOption "datagrip" "Database editor";
-      launchAPIClient = mkStrOption "apidog" "API client";
+      mod = strlib.mkOption "SUPER" "Main modifier";
+      raiseVol = strlib.mkOption ''wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 10%+'' "Increase volume";
+      lowerVol = strlib.mkOption ''wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 10%-'' "Decrease volume";
+      muteVol = strlib.mkOption ''wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle'' "Mute volume";
+      lock = strlib.mkOption "hyprlock" "Lock screen";
+      launchBrowser = strlib.mkOption "zen" "Browser";
+      launchPrivateBrowser = strlib.mkOption "zen --private-window" "Private browser";
+      launchTerminal = strlib.mkOption "alacritty" "Terminal";
+      launchFileManager = strlib.mkOption "alacritty -e nnn" "File manager";
+      launchMenu = strlib.mkOption "walker" "Menu executor";
+      launchAI = strlib.mkOption ''alacritty -e "tgpt --interactive-shell"'' "AI";
+      launchBtop = strlib.mkOption "alacritty --class btop -e btop" "System monitor";
+      launchWifiSelector = strlib.mkOption "alacritty --class nmtui -e nmtui-connect" "WiFi selector";
+      launchBluetoothManager = strlib.mkOption "alacritty --class bluetui -e bluetui" "Bluetooth manager";
+      launchAudioManager = strlib.mkOption "alacritty --class wiremix -e wiremix" "Audio manager";
+      launchAudioVisualizer = strlib.mkOption "NickvisionCavalier.GNOME" "Audio visualizer";
+      launchCalendar = strlib.mkOption "alacritty --class calcurse -e calcurse" "Calendar application";
+      launchScreenshotArea = strlib.mkOption "grimblast --notify copy area" "Screenshot area";
+      launchDatabaseEditor = strlib.mkOption "datagrip" "Database editor";
+      launchAPIClient = strlib.mkOption "apidog" "API client";
     };
     workspace = {
       onEmpty = onEmptyWorkspaceOption;
@@ -181,7 +179,7 @@ in
     };
     # ensure these variables should not be modified by any profile.
     wayland.windowManager.hyprland = {
-      systemd.variables = mkForce [ "--all" ];
+      systemd.variables = mkForce ["--all"];
       enable = mkForce true;
       package = mkForce null;
       portalPackage = mkForce null;
@@ -193,51 +191,52 @@ in
 
         windowrule = opacity 0.97 0.9, class:.*
       '';
-      settings = lib.foldl' lib.recursiveUpdate { } [
+      settings = lib.foldl' lib.recursiveUpdate {} [
         aliases
         {
           # ps -eo pid,comm --sort=comm | grep -iE "firefox|kitty|code|steam|alacritty"
-          bind = [
-            # Apps
-            "$mod, b, exec, $launchBrowser"
-            "$mod SHIFT, B, exec, $launchPrivateBrowser"
-            "$mod, Return, exec, $launchTerminal"
-            "$mod, E, exec, $launchFileManager"
-            "$mod, Space, exec, $launchMenu"
-            "$mod, A, exec, $launchAI"
+          bind =
+            [
+              # Apps
+              "$mod, b, exec, $launchBrowser"
+              "$mod SHIFT, B, exec, $launchPrivateBrowser"
+              "$mod, Return, exec, $launchTerminal"
+              "$mod, E, exec, $launchFileManager"
+              "$mod, Space, exec, $launchMenu"
+              "$mod, A, exec, $launchAI"
 
-            # Screenshots
-            "$mod SHIFT, S, exec, $launchScreenshotArea"
+              # Screenshots
+              "$mod SHIFT, S, exec, $launchScreenshotArea"
 
-            # Window Management
-            "$mod, Q, killactive,"
-            "$mod SHIFT, Q, forcekillactive,"
-            "$mod, F, fullscreen, 1"
-            "$mod, V, togglefloating,"
-            "$mod, P, pseudo," # pseudo-tiling
-            "$mod, J, togglesplit," # dwindle
+              # Window Management
+              "$mod, Q, killactive,"
+              "$mod SHIFT, Q, forcekillactive,"
+              "$mod, F, fullscreen, 1"
+              "$mod, V, togglefloating,"
+              "$mod, P, pseudo," # pseudo-tiling
+              "$mod, J, togglesplit," # dwindle
 
-            # Focus
-            "$mod, left, movefocus, l"
-            "$mod, right, movefocus, r"
-            "$mod, up, movefocus, u"
-            "$mod, down, movefocus, d"
+              # Focus
+              "$mod, left, movefocus, l"
+              "$mod, right, movefocus, r"
+              "$mod, up, movefocus, u"
+              "$mod, down, movefocus, d"
 
-            # Move windows
-            "$mod SHIFT, left, movewindow, l"
-            "$mod SHIFT, right, movewindow, r"
-            "$mod SHIFT, up, movewindow, u"
-            "$mod SHIFT, down, movewindow, d"
+              # Move windows
+              "$mod SHIFT, left, movewindow, l"
+              "$mod SHIFT, right, movewindow, r"
+              "$mod SHIFT, up, movewindow, u"
+              "$mod SHIFT, down, movewindow, d"
 
-            # System
-            "$mod, L, exec, $lock"
-            "$mod, Escape, exec, hyprctl dispatch exit"
-            # ", Print, exec, grimshot --notify save area"
-            ", XF86AudioRaiseVolume, exec, $raiseVol"
-            ", XF86AudioLowerVolume, exec, $lowerVol"
-            ", XF86AudioMute, exec, $muteVol"
-          ]
-          ++ wsBindings;
+              # System
+              "$mod, L, exec, $lock"
+              "$mod, Escape, exec, hyprctl dispatch exit"
+              # ", Print, exec, grimshot --notify save area"
+              ", XF86AudioRaiseVolume, exec, $raiseVol"
+              ", XF86AudioLowerVolume, exec, $lowerVol"
+              ", XF86AudioMute, exec, $muteVol"
+            ]
+            ++ wsBindings;
           bindm = [
             "$mod, mouse:272, movewindow"
             "$mod, mouse:273, resizewindow"
@@ -259,12 +258,11 @@ in
               ignore_opacity = true;
             };
           };
-          env = [ ];
-          workspace =
-            let
-              toWorkspaceLine = entry: "${toString entry.idx}, on-created-empty:${entry.app}";
-            in
-            (map toWorkspaceLine hyprlandHome.workspace.onEmpty) ++ [ ];
+          env = [];
+          workspace = let
+            toWorkspaceLine = entry: "${toString entry.idx}, on-created-empty:${entry.app}";
+          in
+            (map toWorkspaceLine hyprlandHome.workspace.onEmpty) ++ [];
         }
       ];
     };

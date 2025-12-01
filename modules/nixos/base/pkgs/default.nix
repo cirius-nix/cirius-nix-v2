@@ -5,7 +5,7 @@
   ...
 } @ params: {
   config = let
-    guiEnabled = lib.${namespace}.system.checkGuiEnabled params;
+    deEnabled = lib.${namespace}.de.checkEnabled params;
   in {
     environment.systemPackages = with pkgs;
       [
@@ -26,7 +26,7 @@
         smartmontools
         nix-tree
       ]
-      ++ (lib.optionals guiEnabled [
+      ++ (lib.optionals deEnabled [
         vlc
         mpv-unwrapped
         kdePackages.gwenview

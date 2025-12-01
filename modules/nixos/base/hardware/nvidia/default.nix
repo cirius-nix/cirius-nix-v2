@@ -14,10 +14,10 @@
   config = let
     inherit (lib) mkIf;
     nvidiaCfg = (config.${namespace}.base.hardware).nvidia;
-    guiEnabled = lib.${namespace}.system.checkGuiEnabled params;
+    deEnabled = lib.${namespace}.de.checkEnabled params;
   in
     mkIf nvidiaCfg.enable {
-      environment.systemPackages = lib.optionals (nvidiaCfg.enableUtilities && guiEnabled) (with pkgs; [zenith-nvidia lact]);
+      environment.systemPackages = lib.optionals (nvidiaCfg.enableUtilities && deEnabled) (with pkgs; [zenith-nvidia lact]);
       services.lact = {
         enable = false;
         # enable = nvidiaCfg.enableUtilities && guiEnabled;

@@ -7,7 +7,7 @@
   namespace = "cirius-v2";
 in {
   config = {
-    ${namespace} = lib.${namespace}.gnome.applyAttrOnEnabled {inherit namespace pkgs osConfig;} {
+    ${namespace} = lib.${namespace}.gnome.onEnabled {inherit namespace pkgs osConfig;} {
       gnome = {
         panel = {
           top.enable = true;

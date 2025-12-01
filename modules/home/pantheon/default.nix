@@ -4,7 +4,7 @@
   config,
   ...
 } @ params:
-lib.${namespace}.pantheon.applyAttrOnEnabled params
+lib.${namespace}.pantheon.onEnabled params
 {
   options.${namespace}.pantheon = {
   };

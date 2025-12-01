@@ -8,7 +8,7 @@
   ...
 }: let
   inherit (lib) mkIf mkEnableOption;
-  inherit (lib.${namespace}) mkIntOption mkStrOption;
+  inherit (lib.${namespace}) intlib strlib;
 in {
   options.${namespace}.browser.zen-browser = {
     enable = mkEnableOption "Enable zen browser";
@@ -16,13 +16,13 @@ in {
       type = with lib.types;
         listOf (submodule {
           options = {
-            id = mkIntOption 0 "Id of container";
-            name = mkStrOption "" "Name of container";
-            icon = mkStrOption "fingerprint" "Icon of container";
-            color = mkStrOption "purple" "Color of container";
-            spaceID = mkStrOption "" "UUID v4";
-            spaceIcon = mkStrOption "" "Space icon";
-            spacePosition = mkIntOption 0 "position of space";
+            id = intlib.mkOption 0 "Id of container";
+            name = strlib.mkOption "" "Name of container";
+            icon = strlib.mkOption "fingerprint" "Icon of container";
+            color = strlib.mkOption "purple" "Color of container";
+            spaceID = strlib.mkOption "" "UUID v4";
+            spaceIcon = strlib.mkOption "" "Space icon";
+            spacePosition = intlib.mkOption 0 "position of space";
           };
         });
       default = [];

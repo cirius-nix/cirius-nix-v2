@@ -7,7 +7,7 @@
 } @ params: let
   inherit (lib) mkIf mkEnableOption;
   inherit (config.${namespace}.dev) docker;
-  guiEnabled = lib.${namespace}.system.checkGuiEnabled params;
+  deEnabled = lib.${namespace}.de.checkEnabled params;
 in {
   options.${namespace}.dev.docker = {
     enable = mkEnableOption "Enable Docker";
@@ -23,7 +23,7 @@ in {
         minikube
         # pods
       ]
-      ++ (lib.optionals guiEnabled [pkgs.pods]);
+      ++ (lib.optionals deEnabled [pkgs.pods]);
 
     virtualisation = {
       podman = {

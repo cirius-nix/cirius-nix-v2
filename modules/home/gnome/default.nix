@@ -4,7 +4,7 @@
   lib,
   ...
 } @ params:
-lib.${namespace}.gnome.applyAttrOnEnabled params
+lib.${namespace}.gnome.onEnabled params
 {
   options.${namespace}.gnome = {
   };

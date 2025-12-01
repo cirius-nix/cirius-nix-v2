@@ -4,7 +4,7 @@
   namespace,
   ...
 } @ params:
-lib.${namespace}.gnome.applyAttrOnEnabled params {
+lib.${namespace}.gnome.onEnabled params {
   config = {
     dconf.settings = {
       "org/gnome/shell" = {

@@ -1,11 +1,10 @@
 {
-  pkgs,
   namespace,
   lib,
   config,
   ...
 } @ params:
-lib.${namespace}.kde.applyAttrOnEnabled params
+lib.${namespace}.kde.onEnabled params
 {
   options.${namespace}.kde = {
     themeProfile = lib.mkOption {

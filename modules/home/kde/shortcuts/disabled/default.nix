@@ -4,7 +4,7 @@
   lib,
   ...
 } @ params:
-lib.${namespace}.kde.applyAttrOnEnabled params {
+lib.${namespace}.kde.onEnabled params {
   options.${namespace}.kde = {
     disableDefaultShortcuts = lib.mkOption {
       type = lib.types.bool;

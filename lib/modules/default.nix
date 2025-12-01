@@ -1,74 +1,56 @@
-{lib, ...}: let
-  inherit (lib) mkOption types;
-  inherit (types) nullOr enum;
-in {
-  mkEnumOption = values: default: description:
-    mkOption {
-      inherit default description;
-      type = nullOr (enum values);
-    };
-  # flatDist flat multiple level of lists and remove duplicates
-  flatDist = lists: lib.unique (lib.flatten lists);
-  mkIntOption = default: description:
-    mkOption {
-      inherit default description;
-      type = types.int;
-    };
-  mkIntOrNullOption = default: description:
-    mkOption {
-      inherit default description;
-      type = nullOr types.int;
-    };
-  mkStrOption = default: description:
-    mkOption {
-      inherit default description;
-      type = types.str;
-    };
-  mkListOption = type: default: description:
-    mkOption {
-      inherit default description;
-      type = types.listOf type;
-    };
-  onLinux = {pkgs, ...}: module:
+{lib, ...}: {
+  settingByOS = {pkgs, ...}: settings:
     if pkgs.stdenv.isLinux
-    then module
+    then settings.linux or {}
+    else if pkgs.stdenv.isDarwin
+    then settings.darwin or {}
     else {};
-  strictMerge = let
-    checkOverlap = a: b: let
-      commonKeys = lib.intersectLists (lib.attrNames a) (lib.attrNames b);
-    in
-      if commonKeys != []
-      then throw "strictMerge: overlapping keys: ${lib.concatStringsSep ", " commonKeys}"
-      else a // b;
-  in
-    checkOverlap;
 
-  linux = {
-    withInputModule = {pkgs, ...}: module:
-      if pkgs.stdenv.isLinux
-      then module
-      else {};
-  };
-
-  system = {
-    checkGuiEnabled = {
+  de = {
+    enabled = {
       config,
       namespace,
+      pkgs,
       ...
     }:
-      builtins.any (de: (config.${namespace}.de.${de}.enable or false)) [
+      pkgs.stdenv.isLinux
+      && (builtins.any (de: (config.${namespace}.de.${de}.enable or false)) [
         "hyprland"
         "cosmic"
         "kde"
         "gnome"
-      ];
+      ]);
   };
 
-  # loop all elems inside list and create object key with enable =  true.
+  # Batch enable/disable modules
   enableAll = list: conf:
     lib.foldl' lib.recursiveUpdate (lib.listToAttrs (lib.map (name: {
         inherit name;
         value = {enable = true;};
+      })
+      list))
+    [conf];
+
+  disableAll = list: conf:
+    lib.foldl' lib.recursiveUpdate (lib.listToAttrs (lib.map (name: {
+        inherit name;
+        value = {enable = false;};
+      })
+      list))
+    [conf];
+
+  mustEnableAll = list: conf:
+    lib.foldl' lib.recursiveUpdate (lib.listToAttrs (lib.map (name: {
+        inherit name;
+        value = {enable = lib.mkForce true;};
+      })
+      list))
+    [conf];
+
+  mustDisableAll = list: conf:
+    lib.foldl' lib.recursiveUpdate (lib.listToAttrs (lib.map (name: {
+        inherit name;
+        value = {enable = lib.mkForce false;};
       })
       list))
     [conf];

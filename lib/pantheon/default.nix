@@ -1,6 +1,6 @@
 {...}: {
   pantheon = {
-    applyAttrOnEnabled = {
+    onEnabled = {
       pkgs,
       osConfig ? {},
       namespace,

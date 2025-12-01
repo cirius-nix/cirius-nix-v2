@@ -1,6 +1,6 @@
 {...}: {
   gnome = {
-    applyAttrOnEnabled = {
+    onEnabled = {
       pkgs,
       osConfig ? {},
       namespace,

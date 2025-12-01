@@ -3,7 +3,7 @@
   lib,
   ...
 } @ params:
-lib.${namespace}.kde.applyAttrOnEnabled params {
+lib.${namespace}.kde.onEnabled params {
   options.${namespace}.kde.profile.tahoe.variables = {
     # Panels configurations.
     panels = let
