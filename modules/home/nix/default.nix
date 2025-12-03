@@ -25,7 +25,7 @@ in {
   in {
     home.packages = [pkgs.nix-prefetch-github];
     sops = {
-      templates."${namespace}${user.name}:${nixCfg.cachix.configFile}" = lib.mkIf nixCfg.cachix.enable {
+      templates."${namespace}/${user.name}:${nixCfg.cachix.configFile}" = lib.mkIf nixCfg.cachix.enable {
         path = nixCfg.cachix.configFile;
         mode = "0400";
         content = ''

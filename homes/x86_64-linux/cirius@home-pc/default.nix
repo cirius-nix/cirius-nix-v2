@@ -101,7 +101,11 @@ in {
         ];
         api-client = lib.${namespace}.enableAll ["apidog"] {};
         infra = {
-          cloud = lib.${namespace}.enableAll ["aws"] {};
+          cloud = lib.${namespace}.enableAll ["aws"] {
+            aws = {
+              configPlaceholders = ["work/aws/config" "personal/aws/config"];
+            };
+          };
           iac = lib.${namespace}.enableAll ["terraform" "pulumi"] {};
         };
         editors = lib.${namespace}.enableAll ["antigravity" "datagrip" "code" "nixvim"] {

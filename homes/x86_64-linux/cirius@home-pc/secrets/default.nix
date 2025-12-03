@@ -22,19 +22,23 @@ in {
 
         mkCommonSecrets = target: sopsFile: {
           "${target}/ssh/prvkey" = {
-            sopsFile = sopsFile;
+            inherit sopsFile;
             key = "ssh/private_key";
             path = "${config.snowfallorg.user.home.directory}/.ssh/${target}";
           };
           "${target}/ssh/pubkey" = {
-            sopsFile = sopsFile;
+            inherit sopsFile;
             key = "ssh/public_key";
             path = "${config.snowfallorg.user.home.directory}/.ssh/${target}.pub";
           };
           "${target}/git/config" = {
-            sopsFile = sopsFile;
+            inherit sopsFile;
             key = "git/config";
             path = config.${namespace}.gitConfig.${target}.configFile;
+          };
+          "${target}/aws/config" = {
+            inherit sopsFile;
+            key = "aws/config";
           };
         };
 
