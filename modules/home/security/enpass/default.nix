@@ -4,11 +4,10 @@ in
   lib.${namespace}.settingByOS params {
     linux.config = let
       inherit (lib) mkIf;
-      inherit (osConfig.${namespace}.security) enpass;
+      cfg = (osConfig.${namespace}.security).enpass;
     in
-      mkIf enpass.enable {
-        home.packages = with pkgs; [
-          enpass-cli
-        ];
+      mkIf cfg.enable {
+        home.packages = with pkgs; [enpass-cli enpass];
+        xdg.autostart.entries = ["${pkgs.enpass}/share/applications/enpass.desktop"];
       };
   }

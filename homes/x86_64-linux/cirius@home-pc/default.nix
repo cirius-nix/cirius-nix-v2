@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: let
   namespace = "cirius-v2";
@@ -21,8 +22,8 @@ in {
           configFile = strlib.mkOption "" "Path to git config file.";
         };
       };
-      workDir = "${user.home.directory}/Workspaces/github/work/";
-      personalDir = "${user.home.directory}/Workspaces/github/personal/";
+      workDir = "${user.home.directory}/Workspaces/github.com/work/";
+      personalDir = "${user.home.directory}/Workspaces/github.com/personal/";
     in {
       work = lib.mkOption {
         type = subGitConfigType;
@@ -44,6 +45,10 @@ in {
   };
 
   config = {
+    # xdg.autostart = {
+    #   enable = true;
+    #   entries = [pkgs.enpass];
+    # };
     "${namespace}" = {
       ai = lib.${namespace}.enableAll ["lmstudio" "ollama" "copilot" "gemini"] {
         ollama.port = 11434;

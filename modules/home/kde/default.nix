@@ -43,6 +43,7 @@ in
             "KeepClipboardContents" = true;
             "SyncClipboard" = true;
           };
+          "ksmserverrc"."General"."loginMode" = "emptySession";
           "baloofilerc"."Basic Settings"."Indexing-Enabled" = false;
           "kwinrc" = {
             "XWayland"."Scale" = cfg.xwaylandScale;
