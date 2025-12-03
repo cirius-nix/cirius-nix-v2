@@ -7,7 +7,7 @@
     else {};
 
   de = {
-    enabled = {
+    checkEnabled = {
       config,
       namespace,
       pkgs,
@@ -58,4 +58,9 @@
   # check if any key inside object has enable = true
   checkAnyEnabled = obj:
     builtins.any (key: (obj.${key}.enable or false)) (lib.attrNames obj);
+
+  ifNull = nullable: default:
+    if nullable == null
+    then default
+    else nullable;
 }

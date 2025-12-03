@@ -1,5 +1,6 @@
 {lib, ...}: let
-  inherit (lib) nullOr enum mkOption;
+  inherit (lib) nullOr mkOption;
+  inherit (lib.types) enum;
 in {
   enumlib = {
     # Make ENUM options.

@@ -36,7 +36,7 @@
         '';
       })
     ];
-    # environment.variables.QT_QPA_PLATFORMTHEME = "qt6ct";
+    environment.variables.XCURSOR_SIZE = "24";
     services.desktopManager.plasma6.enable = true;
     services.displayManager.sddm.settings.General.DisplayServer = "wayland";
     # required for kde connect.

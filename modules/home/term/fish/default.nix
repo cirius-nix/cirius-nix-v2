@@ -113,6 +113,10 @@
             inherit (pkgs.fishPlugins.bass) src;
           }
           {
+            name = "z";
+            inherit (pkgs.fishPlugins.z) src;
+          }
+          {
             name = "fish-ssh";
             src = pkgs.fetchFromGitHub {
               owner = "danhper";

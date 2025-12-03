@@ -59,7 +59,10 @@ tasks:
     desc: "Check ld lib"
     cmds:
       - nix-locate {{ .CLI_ARGS }}
-
+  list:b16color:
+    desc: "List base16-schemes"
+    cmds: 
+      - ls $(nix path-info nixpkgs#base16-schemes)/share/themes
   build-drv:
     desc: Build a derivation
     vars:

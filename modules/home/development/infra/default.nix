@@ -53,6 +53,7 @@ in {
         (lib.optionals cfg.cloud.aws.enable (with pkgs; [
           aws-vault
           awscli2
+          ssm-session-manager-plugin
         ]))
         ++ (lib.optionals config.programs.fish.enable (with pkgs; [
           fishPlugins.aws

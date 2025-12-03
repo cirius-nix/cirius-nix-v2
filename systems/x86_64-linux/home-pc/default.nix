@@ -3,6 +3,7 @@
   namespace,
   inputs,
   config,
+  lib,
   ...
 }: let
   hostName = "home-pc";
@@ -85,14 +86,12 @@ in {
     # Namespace Configuration
     # ###############################
     ${namespace} = {
-      base = {
+      base = lib.${namespace}.enableAll ["rsync" "input-method" "fonts" "bluetooth"] {
         enable = true;
         rsync = {
-          enable = true;
           port = 3873;
         };
         input-method = {
-          enable = true;
           addons = with pkgs; [
             kdePackages.fcitx5-qt
             fcitx5-bamboo
@@ -100,10 +99,10 @@ in {
           ];
         };
         network = {inherit hostName;};
-        security = {
-          gnupg = {enable = true;};
+        security = lib.${namespace}.enableAll ["gnupg" "infisical"] {
+          # currently no need to use infisical.
           infisical = {
-            enable = true;
+            enable = false;
             port = 8034;
             envFile = config.sops.secrets."infisical/env".path;
             redis = {
@@ -112,15 +111,9 @@ in {
             };
           };
         };
-        database = {
-          neo4j = {
-            enable = true;
-          };
-          postgres = let
-            pgPkg = pkgs.postgresql_18;
-          in {
-            enable = true;
-            package = pgPkg;
+        database = lib.${namespace}.enableAll ["postgres" "neo4j"] {
+          postgres = {
+            package = pkgs.postgresql_18;
             adminPasswordPath = "postgres/hostDB/admin_password";
             extensions = with pkgs; [
               postgresql18Packages.postgis
@@ -132,41 +125,21 @@ in {
           };
         };
         user = {inherit users autologinUser;};
-        hardware = {
-          ntfs.enable = true;
-          nvidia = {
-            enable = true;
-            enableUtilities = true;
-          };
-        };
-        fonts.enable = true;
-      };
-      shell = {
-        ${shellName} = {
-          enable = true;
+        hardware = lib.${namespace}.enableAll ["nvidia" "ntfs"] {
+          nvidia.enableUtilities = true;
         };
       };
+      shell = lib.${namespace}.enableAll [shellName] {};
       wsl.enable = false;
-      de = {
-        hyprland.enable = false;
-        cosmic.enable = false;
+      de = lib.${namespace}.enableAll ["kde"] {
         kde.enable = true;
-        pantheon.enable = false;
-        gnome.enable = false;
       };
-      security = {
+      security = lib.${namespace}.enableAll ["enpass" "fail2ban"] {
         enpass.enable = true;
-        fail2ban.enable = false;
-        clamav.enable = false;
       };
-      network = {
+      network = lib.${namespace}.enableAll ["adguardhome"] {
         # FIXME: collision with docker.
-        adguardhome = {
-          enable = true;
-          settings = {
-            port = 3200;
-          };
-        };
+        adguardhome.settings.port = 3200;
       };
       dev = {
         docker.enable = true;
