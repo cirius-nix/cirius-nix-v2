@@ -14,7 +14,7 @@
     name = "${pname}-${version}";
     src = pkgs.fetchurl {
       url = "https://file-assets.apidog.com/download/Apidog-linux-manual-latest.tar.gz";
-      sha256 = "sha256-tnhJoKqpa/hb70RjjwO1PdoCG380P7AwKHrj+Z4IzYk=";
+      sha256 = "sha256-7N+9moXwCPl4jufZgy0CjJ3aAETfmYgisv0OfOu0nqw=";
     };
     nativeBuildInputs = [
       pkgs.makeWrapper
