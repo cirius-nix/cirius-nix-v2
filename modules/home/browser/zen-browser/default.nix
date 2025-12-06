@@ -49,7 +49,7 @@ in {
     mkIf cfg.enable {
       xdg.mimeApps = let
         value = let
-          zen-browser = inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.twilight-official; # or twilight
+          zen-browser = inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.twilight; # or twilight
         in
           zen-browser.meta.desktopFileName;
         associations = builtins.listToAttrs (map (name: {

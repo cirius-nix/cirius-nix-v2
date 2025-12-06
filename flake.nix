@@ -1,7 +1,7 @@
 {
   description = "Cirius Nix Version 2";
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nur = {
       url = "github:nix-community/NUR";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -27,7 +27,6 @@
     };
     plasma-manager = {
       url = "github:nix-community/plasma-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
     kwin-effects-forceblur = {
@@ -71,7 +70,9 @@
     # browser
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        home-manager.follows = "home-manager";
+      };
     };
     lix = {
       url = "https://git.lix.systems/lix-project/lix/archive/main.tar.gz";
@@ -152,7 +153,7 @@
           # stylix theming
           stylix.homeModules.stylix
           # zen browser
-          inputs.zen-browser.homeModules.twilight-official
+          inputs.zen-browser.homeModules.twilight
           # hyprland
           hyprland.homeManagerModules.default
           walker.homeManagerModules.default
