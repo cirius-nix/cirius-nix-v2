@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }: let
   namespace = "cirius-v2";
@@ -45,10 +44,6 @@ in {
   };
 
   config = {
-    # xdg.autostart = {
-    #   enable = true;
-    #   entries = [pkgs.enpass];
-    # };
     "${namespace}" = {
       ai = lib.${namespace}.enableAll ["lmstudio" "ollama" "copilot" "gemini"] {
         ollama.port = 11434;

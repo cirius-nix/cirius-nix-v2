@@ -3,6 +3,7 @@ keys:
   - &cirius-wsl_cirius age1x9kwej7qejzkr5n3gz6wxecq9a5kq2rcf9lpg4t36638mtwlgylsahwhgs
   - &home-pc_cirius age19c408yytfpxd0dy9lj85jhx9tgyxsl9gdy544fqs8t4g9xka6cysp5xw3q
   - &home-pc age13ncw02zdtee3w8m3g6a97u97d0xlmmt0v4mjgdvqdxw0wge46cksml6fvf
+  - &cirius-darwin age1dq04wy8ktn23me5fhz5pv62k85k5f8206q9gzccv6mh4g55la4fqkvdc0h
 creation_rules:
   - path_regex: secrets/org\.cirius/.+[^/]\.(yaml|json|env|ini)$
     key_groups:
@@ -11,16 +12,4 @@ creation_rules:
          - *cirius-wsl
          - *home-pc_cirius
          - *home-pc
-  - path_regex: secrets/(cirius-wsl|home-pc)/cirius/[^/]+\.(yaml|json|env|ini)$
-    key_groups:
-      - age:
-         - *cirius-wsl_cirius
-         - *home-pc_cirius
-         - *home-pc
-  - path_regex: secrets/(cirius-wsl|home-pc)/[^/]+\.(yaml|json|env|ini)$
-    key_groups:
-      - age:
-         - *cirius-wsl
-         - *cirius-wsl_cirius
-         - *home-pc_cirius
-         - *home-pc
+         - *cirius-darwin
