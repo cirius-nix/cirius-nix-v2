@@ -21,7 +21,7 @@
   in {
     services.ollama = {
       inherit (ollamaCfg) enable port;
-      host = "0.0.0.0";
+      host = "localhost";
       acceleration =
         if nvidiaEnabled
         then "cuda"
